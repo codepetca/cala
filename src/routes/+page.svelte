@@ -49,12 +49,21 @@
       {
         id: generateId(),
         tripId: '',
+        title: 'Hotel Check-in',
+        type: 'stay',
+        start: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 15, 0),
+        details: 'Grand Pacific Hotel - Confirmation #ABC123',
+        order: 0
+      },
+      {
+        id: generateId(),
+        tripId: '',
         familyId: families[0].id,
         title: 'Morning Coffee Run',
         type: 'meal',
         start: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 7, 30),
         details: 'Local coffee shop downtown',
-        order: 0
+        order: 1
       },
       {
         id: generateId(),
@@ -64,7 +73,7 @@
         start: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 10, 0),
         end: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 12, 30),
         details: 'Guided tour of historic district',
-        order: 1
+        order: 2
       },
       {
         id: generateId(),
@@ -74,7 +83,7 @@
         type: 'meal',
         start: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 13, 0),
         details: 'Try local specialties',
-        order: 2
+        order: 3
       },
       {
         id: generateId(),

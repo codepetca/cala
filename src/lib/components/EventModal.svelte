@@ -1,6 +1,11 @@
 <script lang="ts">
   import Button from '$lib/components/ui/button.svelte';
+  import Input from '$lib/components/ui/input.svelte';
+  import Select from '$lib/components/ui/select.svelte';
+  import Textarea from '$lib/components/ui/textarea.svelte';
+  import Label from '$lib/components/ui/label.svelte';
   import type { Event, Family } from '$lib/schema.js';
+  import { theme } from '$lib/theme.js';
 
   interface Props {
     open: boolean;
@@ -96,12 +101,11 @@
         <form onsubmit={(e) => { e.preventDefault(); handleSave(); }} class="space-y-4">
           <!-- Title -->
           <div>
-            <label for="title" class="block text-sm font-medium mb-1">Title</label>
-            <input
+            <Label for="title" required>Title</Label>
+            <Input
               id="title"
               type="text"
               bind:value={formData.title}
-              class="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Event title..."
               required
             />
@@ -109,83 +113,78 @@
 
           <!-- Type -->
           <div>
-            <label for="type" class="block text-sm font-medium mb-1">Type</label>
-            <select
+            <Label for="type">Type</Label>
+            <Select
               id="type"
               bind:value={formData.type}
-              class="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {#each eventTypes as type}
                 <option value={type.value}>{type.label}</option>
               {/each}
-            </select>
+            </Select>
           </div>
 
           <!-- Family -->
           <div>
-            <label for="family" class="block text-sm font-medium mb-1">Family</label>
-            <select
+            <Label for="family">Family</Label>
+            <Select
               id="family"
               bind:value={formData.familyId}
-              class="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Shared (all families)</option>
               {#each families as family}
                 <option value={family.id}>{family.name}</option>
               {/each}
-            </select>
+            </Select>
           </div>
 
           <!-- Start Time -->
           <div>
-            <label for="start" class="block text-sm font-medium mb-1">Start Time</label>
-            <input
+            <Label for="start">Start Time</Label>
+            <Input
               id="start"
               type="datetime-local"
               value={formatDateForInput(formData.start)}
               onchange={(e) => formData.start = parseDateFromInput(e.currentTarget.value)}
-              class="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <!-- End Time -->
           <div>
-            <label for="end" class="block text-sm font-medium mb-1">End Time</label>
-            <input
+            <Label for="end">End Time</Label>
+            <Input
               id="end"
               type="datetime-local"
               value={formatDateForInput(formData.end)}
               onchange={(e) => formData.end = parseDateFromInput(e.currentTarget.value)}
-              class="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <!-- Details -->
           <div>
-            <label for="details" class="block text-sm font-medium mb-1">Details</label>
-            <textarea
+            <Label for="details">Details</Label>
+            <Textarea
               id="details"
               bind:value={formData.details}
-              class="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               placeholder="Additional details..."
-              rows="3"
-            ></textarea>
+              rows={3}
+            />
           </div>
 
           <!-- Actions -->
           <div class="flex justify-between pt-4">
             <div>
               {#if event?.id}
-                <Button type="button" variant="destructive" onclick={handleDelete} class="rounded-md">
+                <Button type="button" variant="destructive" onclick={handleDelete}>
                   Delete
                 </Button>
               {/if}
             </div>
-            <div class="flex gap-2">
-              <Button type="button" variant="secondary" onclick={handleClose} class="rounded-md">
+            <div class="flex gap-3">
+              <Button type="button" variant="secondary" onclick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" class="rounded-md">
+              <Button type="submit">
                 {event?.id ? 'Save' : 'Create'}
               </Button>
             </div>

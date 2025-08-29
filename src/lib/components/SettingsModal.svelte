@@ -64,8 +64,8 @@
         </div>
 
         <!-- Close button -->
-        <div class="flex justify-end pt-6 mt-6 border-t">
-          <Button onclick={handleClose} variant="secondary" class="rounded-md">
+        <div class="flex justify-end pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
+          <Button onclick={handleClose} variant="secondary">
             Close
           </Button>
         </div>

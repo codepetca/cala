@@ -162,7 +162,7 @@
     <!-- Trip Days -->
     {#each tripDays as day (day.toDateString())}
       {@const dayEvents = eventsByDay.grouped[day.toDateString()] || []}
-      <div class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden">
+      <div class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-sm">
         <!-- Day Header -->
         <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
           <div class="flex items-center justify-between">
@@ -221,8 +221,8 @@
 <!-- Fixed Unscheduled Card at bottom -->
 {#if eventsByDay.unscheduled.length > 0}
   <div 
-    class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-600 transition-all duration-300 ease-in-out z-40"
-    style="height: {unscheduledExpanded ? '33.333vh' : '60px'}; box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);"
+    class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-600 transition-all duration-300 ease-in-out z-40 rounded-t-xl"
+    style="height: {unscheduledExpanded ? '33.333vh' : '60px'}; box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.1);"
   >
     <!-- Header (always visible, clickable) -->
     <div 
