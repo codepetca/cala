@@ -2,7 +2,6 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import '../app.pcss';
 	import Navbar from '$lib/components/Navbar.svelte';
-	import TitleBar from '$lib/components/TitleBar.svelte';
 
 	let { children } = $props();
 </script>
@@ -13,7 +12,6 @@
 
 <div class="min-h-screen bg-white dark:bg-gray-900">
 	<Navbar />
-	<TitleBar />
 	<main class="pb-20">
 		{@render children?.()}
 	</main>

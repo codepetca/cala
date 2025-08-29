@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { currentTrip, trips } from '$lib/stores.js';
+  import { getCurrentTrip, updateTrip } from '$lib/stores.svelte.js';
   
-  let editing = false;
-  let editValue = '';
+  let editing = $state(false);
+  let editValue = $state('');
   
   function startEditing() {
-    if (!$currentTrip) return;
+    if (!getCurrentTrip()) return;
     editing = true;
-    editValue = $currentTrip.name;
+    editValue = getCurrentTrip().name;
   }
   
   function finishEditing() {
-    if (!$currentTrip || !editValue.trim()) {
+    if (!getCurrentTrip() || !editValue.trim()) {
       editing = false;
       return;
     }
     
-    trips.updateTrip($currentTrip.id, { name: editValue.trim() });
+    updateTrip(getCurrentTrip().id, { name: editValue.trim() });
     editing = false;
   }
   
@@ -25,26 +25,26 @@
   }
 </script>
 
-{#if $currentTrip}
+{#if getCurrentTrip()}
   <div class="border-b border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 backdrop-blur">
     <div class="px-4 py-3">
       {#if editing}
         <input
           bind:value={editValue}
-          on:blur={finishEditing}
-          on:keydown={(e) => e.key === 'Enter' ? finishEditing() : e.key === 'Escape' ? cancelEditing() : null}
+          onblur={finishEditing}
+          onkeydown={(e) => e.key === 'Enter' ? finishEditing() : e.key === 'Escape' ? cancelEditing() : null}
           class="text-xl font-bold text-center truncate w-full bg-transparent border-0 outline-none focus:ring-0"
           autofocus
         />
       {:else}
         <h1 
           class="text-xl font-bold text-center truncate cursor-pointer hover:opacity-70 transition-opacity"
-          on:click={startEditing}
+          onclick={startEditing}
           role="button"
           tabindex="0"
-          on:keydown={(e) => e.key === 'Enter' && startEditing()}
+          onkeydown={(e) => e.key === 'Enter' && startEditing()}
         >
-          {$currentTrip.name}
+          {getCurrentTrip().name}
         </h1>
       {/if}
     </div>

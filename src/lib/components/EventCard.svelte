@@ -1,22 +1,15 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import type { Event, Family } from '$lib/schema.js';
   import { cn } from '$lib/utils.js';
 
-  type $$Props = {
+  interface Props {
     event: Event;
     family?: Family;
     class?: string;
-  };
+    onclick?: (event: Event) => void;
+  }
 
-  export let event: Event;
-  export let family: Family | undefined = undefined;
-  let className: $$Props["class"] = undefined;
-  export { className as class };
-
-  const dispatch = createEventDispatcher<{
-    click: Event;
-  }>();
+  let { event, family, class: className, onclick }: Props = $props();
 
   // Event type icons - simple SVG strings
   const typeIcons: Record<string, string> = {
@@ -28,7 +21,7 @@
   };
 
   function handleClick() {
-    dispatch('click', event);
+    onclick?.(event);
   }
 
   function formatTime(date: Date | undefined): string {
@@ -46,10 +39,10 @@
     "px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors rounded drag-item",
     className
   )}
-  on:click={handleClick}
+  onclick={handleClick}
   role="button"
   tabindex="0"
-  on:keydown={(e) => e.key === 'Enter' && handleClick()}
+  onkeydown={(e) => e.key === 'Enter' && handleClick()}
 >
   <div class="flex items-center gap-2">
     {#if event.start}

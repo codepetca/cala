@@ -1,23 +1,17 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import Button from '$lib/components/ui/button.svelte';
   import type { Event, Family } from '$lib/schema.js';
 
-  type $$Props = {
+  interface Props {
     open: boolean;
     event: Event | null;
     families: Family[];
-  };
+    onclose?: () => void;
+    onsave?: (event: Event) => void;
+    ondelete?: (eventId: string) => void;
+  }
 
-  export let open: boolean;
-  export let event: Event | null;
-  export let families: Family[];
-
-  const dispatch = createEventDispatcher<{
-    close: void;
-    save: { event: Event };
-    delete: { eventId: string };
-  }>();
+  let { open, event, families, onclose, onsave, ondelete }: Props = $props();
 
   // Event type options
   const eventTypes = [
@@ -28,32 +22,32 @@
     { value: 'note', label: 'Note 📝' }
   ];
 
-  let formData: Partial<Event> = {};
+  let formData = $state<Partial<Event>>({});
 
-  $: if (event && open) {
-    formData = { ...event };
-  }
+  $effect(() => {
+    if (event && open) {
+      formData = { ...event };
+    }
+  });
 
   function handleClose() {
-    dispatch('close');
+    onclose?.();
   }
 
   function handleSave() {
     if (!formData.title?.trim()) return;
     
-    dispatch('save', {
-      event: {
-        ...event,
-        ...formData,
-        title: formData.title.trim(),
-      } as Event
-    });
+    onsave?.({
+      ...event,
+      ...formData,
+      title: formData.title.trim(),
+    } as Event);
     handleClose();
   }
 
   function handleDelete() {
     if (event?.id) {
-      dispatch('delete', { eventId: event.id });
+      ondelete?.(event.id);
       handleClose();
     }
   }
@@ -72,14 +66,14 @@
   <!-- Modal backdrop with reduced opacity -->
   <div 
     class="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    on:click={handleClose}
+    onclick={handleClose}
     role="button"
     tabindex="-1"
   >
     <!-- Modal content -->
     <div 
       class="bg-white dark:bg-gray-900 rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto shadow-xl"
-      on:click|stopPropagation
+      onclick={(e) => e.stopPropagation()}
       role="dialog"
       aria-modal="true"
     >
@@ -90,7 +84,7 @@
           </h2>
           <button
             type="button"
-            on:click={handleClose}
+            onclick={handleClose}
             class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -99,7 +93,7 @@
           </button>
         </div>
 
-        <form on:submit|preventDefault={handleSave} class="space-y-4">
+        <form onsubmit={(e) => { e.preventDefault(); handleSave(); }} class="space-y-4">
           <!-- Title -->
           <div>
             <label for="title" class="block text-sm font-medium mb-1">Title</label>
@@ -149,7 +143,7 @@
               id="start"
               type="datetime-local"
               value={formatDateForInput(formData.start)}
-              on:change={(e) => formData.start = parseDateFromInput(e.currentTarget.value)}
+              onchange={(e) => formData.start = parseDateFromInput(e.currentTarget.value)}
               class="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -161,7 +155,7 @@
               id="end"
               type="datetime-local"
               value={formatDateForInput(formData.end)}
-              on:change={(e) => formData.end = parseDateFromInput(e.currentTarget.value)}
+              onchange={(e) => formData.end = parseDateFromInput(e.currentTarget.value)}
               class="w-full px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -182,13 +176,13 @@
           <div class="flex justify-between pt-4">
             <div>
               {#if event?.id}
-                <Button type="button" variant="destructive" on:click={handleDelete} class="rounded-md">
+                <Button type="button" variant="destructive" onclick={handleDelete} class="rounded-md">
                   Delete
                 </Button>
               {/if}
             </div>
             <div class="flex gap-2">
-              <Button type="button" variant="secondary" on:click={handleClose} class="rounded-md">
+              <Button type="button" variant="secondary" onclick={handleClose} class="rounded-md">
                 Cancel
               </Button>
               <Button type="submit" class="rounded-md">

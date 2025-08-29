@@ -1,12 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { trips, currentTripId, filteredEvents } from '$lib/stores.js';
+  import {
+    getTrips,
+    getCurrentTrip,
+    getFilteredEvents,
+    addTrip,
+    setCurrentTripId
+  } from '$lib/stores.svelte.js';
   import { generateId } from '$lib/schema.js';
   import CalendarBoard from '$lib/components/CalendarBoard.svelte';
   import Button from '$lib/components/ui/button.svelte';
   import type { Trip, Family, Event } from '$lib/schema.js';
 
-  let mounted = false;
+  let mounted = $state(false);
 
   onMount(() => {
     mounted = true;
@@ -15,11 +21,11 @@
     localStorage.clear();
     
     // Create sample data if no trips exist
-    if ($trips.length === 0) {
+    if (getTrips().length === 0) {
       createSampleTrip();
     } else {
       // Set the first trip as current
-      currentTripId.set($trips[0].id);
+      setCurrentTripId(getTrips()[0].id);
     }
   });
 
@@ -178,8 +184,8 @@
     trip.events = trip.events.map(event => ({ ...event, tripId: trip.id }));
 
     // Add to store and set as current
-    trips.addTrip(trip);
-    currentTripId.set(trip.id);
+    addTrip(trip);
+    setCurrentTripId(trip.id);
   }
 
   function createNewTrip() {
@@ -196,25 +202,24 @@
       events: []
     };
 
-    trips.addTrip(newTrip);
-    currentTripId.set(newTrip.id);
+    addTrip(newTrip);
+    setCurrentTripId(newTrip.id);
   }
 
-  $: currentTrip = $trips.find(trip => trip.id === $currentTripId);
 </script>
 
 {#if mounted}
-  {#if currentTrip}
+  {#if getCurrentTrip()}
     <CalendarBoard 
-      trip={currentTrip} 
-      filteredEvents={$filteredEvents}
-      on:event-click={(e) => console.log('Event clicked:', e.detail)}
+      trip={getCurrentTrip()} 
+      filteredEvents={getFilteredEvents()}
+      oneventclick={(event) => console.log('Event clicked:', event)}
     />
   {:else}
     <div class="text-center py-12">
       <h2 class="text-xl font-semibold mb-4">No trips found</h2>
       <p class="text-gray-500 mb-6">Create your first trip to get started!</p>
-      <Button on:click={createNewTrip}>
+      <Button onclick={createNewTrip}>
         Create New Trip
       </Button>
     </div>

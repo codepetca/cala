@@ -1,13 +1,9 @@
 <script lang="ts">
-  import { isDarkMode } from '$lib/stores.js';
+  import { toggleTheme } from '$lib/stores.svelte.js';
   import Button from '$lib/components/ui/button.svelte';
-
-  function toggleTheme() {
-    isDarkMode.update(dark => !dark);
-  }
 </script>
 
-<Button variant="ghost" size="icon" on:click={toggleTheme} class="relative">
+<Button variant="ghost" size="icon" onclick={toggleTheme} class="relative">
   <svg
     class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
     xmlns="http://www.w3.org/2000/svg"

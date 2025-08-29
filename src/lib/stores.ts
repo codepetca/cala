@@ -42,7 +42,7 @@ function saveTripsToStorage(trips: Trip[]) {
   }
 }
 
-// Create the main trips store
+// Create the main trips store using legacy stores for now
 function createTripsStore() {
   const { subscribe, set, update } = writable<Trip[]>(loadTripsFromStorage());
 

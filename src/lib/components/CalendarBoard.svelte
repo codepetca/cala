@@ -1,45 +1,43 @@
 <script lang="ts">
   import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
   import { flip } from 'svelte/animate';
-  import { createEventDispatcher } from 'svelte';
   import EventCard from './EventCard.svelte';
   import EventModal from './EventModal.svelte';
   import Button from './ui/button.svelte';
   import type { Trip, Event, Family } from '$lib/schema.js';
   import { getTripDays, formatDate, generateId } from '$lib/schema.js';
-  import { trips } from '$lib/stores.js';
+  import { addEvent, updateEvent, deleteEvent } from '$lib/stores.svelte.js';
 
-  type $$Props = {
+  interface Props {
     trip: Trip;
     filteredEvents: Event[];
-  };
+    oneventclick?: (event: Event) => void;
+  }
 
-  export let trip: Trip;
-  export let filteredEvents: Event[];
+  let { trip, filteredEvents, oneventclick }: Props = $props();
 
-  const dispatch = createEventDispatcher<{
-    'event-click': Event;
-  }>();
 
   // Modal state
-  let modalOpen = false;
-  let selectedEvent: Event | null = null;
+  let modalOpen = $state(false);
+  let selectedEvent = $state<Event | null>(null);
 
   // Get trip days
-  $: tripDays = getTripDays(trip);
+  let tripDays = $derived(getTripDays(trip));
   
   // Local state for drag operations - synced with store data
-  let dayArrays: { [key: string]: Event[] } = {};
-  let unscheduledItems: Event[] = [];
-  let isDragging = false;
+  let dayArrays = $state<{ [key: string]: Event[] }>({});
+  let unscheduledItems = $state<Event[]>([]);
+  let isDragging = $state(false);
   
   // Time selection during drag
-  let draggedOverDay: Date | null = null;
+  let draggedOverDay = $state<Date | null>(null);
   
   // Sync local state with store data only when not dragging
-  $: if (!isDragging) {
-    syncLocalState(filteredEvents, tripDays);
-  }
+  $effect(() => {
+    if (!isDragging) {
+      syncLocalState(filteredEvents, tripDays);
+    }
+  });
   
   function syncLocalState(events: Event[], days: Date[]) {
     dayArrays = createDayArrays(events, days);
@@ -93,7 +91,7 @@
   function handleEventClick(event: Event) {
     selectedEvent = event;
     modalOpen = true;
-    dispatch('event-click', event);
+    oneventclick?.(event);
   }
 
   function handleNewEvent(day?: Date) {
@@ -109,20 +107,18 @@
     modalOpen = true;
   }
 
-  function handleSaveEvent(event: CustomEvent<{ event: Event }>) {
-    const eventData = event.detail.event;
-    
+  function handleSaveEvent(eventData: Event) {
     if (eventData.id && filteredEvents.find(e => e.id === eventData.id)) {
       // Update existing event
-      trips.updateEvent(trip.id, eventData.id, eventData);
+      updateEvent(trip.id, eventData.id, eventData);
     } else {
       // Create new event
-      trips.addEvent(trip.id, { ...eventData, id: eventData.id || generateId() });
+      addEvent(trip.id, { ...eventData, id: eventData.id || generateId() });
     }
   }
 
-  function handleDeleteEvent(event: CustomEvent<{ eventId: string }>) {
-    trips.deleteEvent(trip.id, event.detail.eventId);
+  function handleDeleteEvent(eventId: string) {
+    deleteEvent(trip.id, eventId);
   }
 
 
@@ -133,7 +129,6 @@
     
     const dayKey = day.toDateString();
     dayArrays[dayKey] = e.detail.items;
-    dayArrays = { ...dayArrays }; // Trigger reactivity
   }
 
   function handleDayFinalize(day: Date, e: CustomEvent) {
@@ -142,7 +137,6 @@
     
     // Update local state
     dayArrays[dayKey] = items;
-    dayArrays = { ...dayArrays };
     
     // Only update the dragged event's time, keep existing events' times unchanged
     items.forEach((event: Event, index: number) => {
@@ -194,7 +188,7 @@
         order: index
       };
       
-      trips.updateEvent(trip.id, event.id, updatedData);
+      updateEvent(trip.id, event.id, updatedData);
     });
     
     // Clear drag state
@@ -226,7 +220,7 @@
         order: index
       };
       
-      trips.updateEvent(trip.id, event.id, updatedData);
+      updateEvent(trip.id, event.id, updatedData);
     });
     
     // Clear drag state
@@ -271,8 +265,8 @@
               element.style.setProperty('background-color', bgColor, 'important');
             }
           }}
-          on:consider={(e) => handleDayConsider(day, e)}
-          on:finalize={(e) => handleDayFinalize(day, e)}
+          onconsider={(e) => handleDayConsider(day, e)}
+          onfinalize={(e) => handleDayFinalize(day, e)}
           role="region"
           aria-label="Day events container"
           class="min-h-[100px] relative"
@@ -282,7 +276,7 @@
               <EventCard
                 {event}
                 family={getFamilyById(event.familyId)}
-                on:click={() => handleEventClick(event)}
+                onclick={() => handleEventClick(event)}
                 class="touch-manipulation cursor-grab active:cursor-grabbing border-0 rounded-none border-b last:border-b-0"
               />
             </div>
@@ -318,8 +312,8 @@
             element.style.setProperty('background-color', bgColor, 'important');
           }
         }}
-        on:consider={handleUnscheduledConsider}
-        on:finalize={handleUnscheduledFinalize}
+        onconsider={handleUnscheduledConsider}
+        onfinalize={handleUnscheduledFinalize}
         class="min-h-[80px]"
       >
         {#each unscheduledItems as event (event.id)}
@@ -327,7 +321,7 @@
             <EventCard
               {event}
               family={getFamilyById(event.familyId)}
-              on:click={() => handleEventClick(event)}
+              onclick={() => handleEventClick(event)}
               class="touch-manipulation cursor-grab active:cursor-grabbing border-0 rounded-none border-b last:border-b-0"
             />
           </div>
@@ -340,7 +334,7 @@
 <!-- Floating Action Button -->
 <div class="fixed bottom-6 right-6 z-10">
   <Button 
-    on:click={() => handleNewEvent()} 
+    onclick={() => handleNewEvent()} 
     class="h-14 w-14 !rounded-full shadow-lg hover:shadow-xl transition-shadow"
   >
     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -354,7 +348,7 @@
   open={modalOpen}
   event={selectedEvent}
   families={trip.families}
-  on:close={() => { modalOpen = false; selectedEvent = null; }}
-  on:save={handleSaveEvent}
-  on:delete={handleDeleteEvent}
+  onclose={() => { modalOpen = false; selectedEvent = null; }}
+  onsave={handleSaveEvent}
+  ondelete={handleDeleteEvent}
 />

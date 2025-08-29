@@ -1,13 +1,11 @@
 <script lang="ts">
-  type $$Props = {
+  interface Props {
     targetTime: Date;
     visible: boolean;
     hoveredTime?: Date;
-  };
+  }
 
-  export let targetTime: Date;
-  export let visible: boolean = false;
-  export let hoveredTime: Date | undefined = undefined;
+  let { targetTime, visible = false, hoveredTime }: Props = $props();
 
   // Generate time slots around the target time
   function generateTimeSlots(centerTime: Date): Date[] {
@@ -52,7 +50,7 @@
            slot.getMinutes() === hoveredTime.getMinutes();
   }
 
-  $: timeSlots = visible ? generateTimeSlots(targetTime) : [];
+  let timeSlots = $derived(visible ? generateTimeSlots(targetTime) : []);
 </script>
 
 {#if visible}
