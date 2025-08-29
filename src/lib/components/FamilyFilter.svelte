@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { getSelectedFamilyId, setSelectedFamilyId } from '$lib/stores.svelte.js';
-  import type { Family } from '$lib/schema.js';
+  import { tripStore } from '$lib/stores';
+  import type { Family } from '$lib/schemas';
 
   interface Props {
     families: Family[];
@@ -10,14 +10,14 @@
 
   function handleFamilyChange(event: Event) {
     const target = event.target as HTMLSelectElement;
-    setSelectedFamilyId(target.value || null);
+    tripStore.setFamilyFilter(target.value || null);
   }
 </script>
 
 <div class="flex items-center gap-2">
   <select
     id="family-filter"
-    value={getSelectedFamilyId() || ''}
+    value={tripStore.getCurrentFamilyFilter() || ''}
     onchange={handleFamilyChange}
     class="px-2 py-1 border rounded-md bg-background text-sm min-w-[100px] text-xs"
   >
@@ -29,8 +29,8 @@
     {/each}
   </select>
   
-  {#if getSelectedFamilyId()}
-    {@const selectedFamily = families.find(f => f.id === getSelectedFamilyId())}
+  {#if tripStore.getCurrentFamilyFilter()}
+    {@const selectedFamily = families.find(f => f.id === tripStore.getCurrentFamilyFilter())}
     {#if selectedFamily}
       <span 
         class="inline-block w-3 h-3 rounded-full flex-shrink-0"

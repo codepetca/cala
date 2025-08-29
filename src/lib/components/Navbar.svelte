@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getCurrentTrip, updateTrip } from '$lib/stores.svelte.js';
+  import { tripStore } from '$lib/stores';
   import Button from './ui/button.svelte';
   import SettingsModal from './SettingsModal.svelte';
   
@@ -8,18 +8,18 @@
   let settingsOpen = $state(false);
   
   function startEditing() {
-    if (!getCurrentTrip()) return;
+    if (!tripStore.currentTrip) return;
     editing = true;
-    editValue = getCurrentTrip().name;
+    editValue = tripStore.currentTrip.name;
   }
   
   function finishEditing() {
-    if (!getCurrentTrip() || !editValue.trim()) {
+    if (!tripStore.currentTrip || !editValue.trim()) {
       editing = false;
       return;
     }
     
-    updateTrip(getCurrentTrip().id, { name: editValue.trim() });
+    tripStore.updateTrip(tripStore.currentTrip.id, { name: editValue.trim() });
     editing = false;
   }
   
@@ -45,7 +45,7 @@
     
     <!-- Center: Trip Title -->
     <div class="flex-1 flex justify-center">
-      {#if getCurrentTrip()}
+      {#if tripStore.currentTrip}
         {#if editing}
           <input
             bind:value={editValue}
@@ -62,7 +62,7 @@
             tabindex="0"
             onkeydown={(e) => e.key === 'Enter' && startEditing()}
           >
-            {getCurrentTrip().name}
+            {tripStore.currentTrip.name}
           </h1>
         {/if}
       {/if}
@@ -70,7 +70,7 @@
     
     <!-- Right side: Filter + Settings -->
     <div class="flex items-center gap-2">
-      {#if getCurrentTrip() && getCurrentTrip().families.length > 0}
+      {#if tripStore.currentTrip && tripStore.currentTrip.families.length > 0}
         <!-- Filter icon -->
         <Button variant="ghost" size="icon" class="h-9 w-9">
           <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

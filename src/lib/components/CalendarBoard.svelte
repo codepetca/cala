@@ -4,9 +4,9 @@
   import EventCard from './EventCard.svelte';
   import EventModal from './EventModal.svelte';
   import Button from './ui/button.svelte';
-  import type { Trip, Event, Family } from '$lib/schema.js';
-  import { getTripDays, formatDate, generateId } from '$lib/schema.js';
-  import { addEvent, updateEvent, deleteEvent } from '$lib/stores.svelte.js';
+  import { tripStore } from '$lib/stores';
+  import { generateId, type Trip, type Event, type Family } from '$lib/schemas';
+  import { getTripDays, formatDate } from '$lib/utils/trip.utils';
 
   interface Props {
     trip: Trip;
@@ -110,15 +110,15 @@
   function handleSaveEvent(eventData: Event) {
     if (eventData.id && filteredEvents.find(e => e.id === eventData.id)) {
       // Update existing event
-      updateEvent(trip.id, eventData.id, eventData);
+      tripStore.updateEvent(trip.id, eventData.id, eventData);
     } else {
       // Create new event
-      addEvent(trip.id, { ...eventData, id: eventData.id || generateId() });
+      tripStore.addEvent(trip.id, { ...eventData, id: eventData.id || generateId() });
     }
   }
 
   function handleDeleteEvent(eventId: string) {
-    deleteEvent(trip.id, eventId);
+    tripStore.deleteEvent(trip.id, eventId);
   }
 
 
@@ -188,7 +188,7 @@
         order: index
       };
       
-      updateEvent(trip.id, event.id, updatedData);
+      tripStore.updateEvent(trip.id, event.id, updatedData);
     });
     
     // Clear drag state
@@ -220,7 +220,7 @@
         order: index
       };
       
-      updateEvent(trip.id, event.id, updatedData);
+      tripStore.updateEvent(trip.id, event.id, updatedData);
     });
     
     // Clear drag state

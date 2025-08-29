@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { getCurrentTrip, updateTrip } from '$lib/stores.svelte.js';
+  import { tripStore } from '$lib/stores';
   
   let editing = $state(false);
   let editValue = $state('');
   
   function startEditing() {
-    if (!getCurrentTrip()) return;
+    if (!tripStore.currentTrip) return;
     editing = true;
-    editValue = getCurrentTrip().name;
+    editValue = tripStore.currentTrip.name;
   }
   
   function finishEditing() {
-    if (!getCurrentTrip() || !editValue.trim()) {
+    if (!tripStore.currentTrip || !editValue.trim()) {
       editing = false;
       return;
     }
     
-    updateTrip(getCurrentTrip().id, { name: editValue.trim() });
+    tripStore.updateTrip(tripStore.currentTrip.id, { name: editValue.trim() });
     editing = false;
   }
   
@@ -25,7 +25,7 @@
   }
 </script>
 
-{#if getCurrentTrip()}
+{#if tripStore.currentTrip}
   <div class="border-b border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 backdrop-blur">
     <div class="px-4 py-3">
       {#if editing}
@@ -44,7 +44,7 @@
           tabindex="0"
           onkeydown={(e) => e.key === 'Enter' && startEditing()}
         >
-          {getCurrentTrip().name}
+          {tripStore.currentTrip.name}
         </h1>
       {/if}
     </div>

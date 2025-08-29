@@ -1,16 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import {
-    getTrips,
-    getCurrentTrip,
-    getFilteredEvents,
-    addTrip,
-    setCurrentTripId
-  } from '$lib/stores.svelte.js';
-  import { generateId } from '$lib/schema.js';
+  import { tripStore } from '$lib/stores';
+  import { generateId, type Trip, type Family, type Event } from '$lib/schemas';
   import CalendarBoard from '$lib/components/CalendarBoard.svelte';
   import Button from '$lib/components/ui/button.svelte';
-  import type { Trip, Family, Event } from '$lib/schema.js';
 
   let mounted = $state(false);
 
@@ -21,11 +14,11 @@
     localStorage.clear();
     
     // Create sample data if no trips exist
-    if (getTrips().length === 0) {
+    if (tripStore.allTrips.length === 0) {
       createSampleTrip();
     } else {
       // Set the first trip as current
-      setCurrentTripId(getTrips()[0].id);
+      tripStore.setCurrentTrip(tripStore.allTrips[0].id);
     }
   });
 
@@ -184,8 +177,8 @@
     trip.events = trip.events.map(event => ({ ...event, tripId: trip.id }));
 
     // Add to store and set as current
-    addTrip(trip);
-    setCurrentTripId(trip.id);
+    tripStore.addTrip(trip);
+    tripStore.setCurrentTrip(trip.id);
   }
 
   function createNewTrip() {
@@ -202,17 +195,17 @@
       events: []
     };
 
-    addTrip(newTrip);
-    setCurrentTripId(newTrip.id);
+    tripStore.addTrip(newTrip);
+    tripStore.setCurrentTrip(newTrip.id);
   }
 
 </script>
 
 {#if mounted}
-  {#if getCurrentTrip()}
+  {#if tripStore.currentTrip}
     <CalendarBoard 
-      trip={getCurrentTrip()} 
-      filteredEvents={getFilteredEvents()}
+      trip={tripStore.currentTrip} 
+      filteredEvents={tripStore.filteredEvents}
       oneventclick={(event) => console.log('Event clicked:', event)}
     />
   {:else}

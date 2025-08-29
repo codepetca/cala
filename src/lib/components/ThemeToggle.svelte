@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { toggleTheme } from '$lib/stores.svelte.js';
+  import { themeStore } from '$lib/stores';
   import Button from '$lib/components/ui/button.svelte';
 </script>
 
-<Button variant="ghost" size="icon" onclick={toggleTheme} class="relative">
+<Button variant="ghost" size="icon" onclick={() => themeStore.toggle()} class="relative">
   <svg
     class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
     xmlns="http://www.w3.org/2000/svg"
