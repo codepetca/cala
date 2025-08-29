@@ -20,6 +20,9 @@
   let modalOpen = $state(false);
   let selectedEvent = $state<Event | null>(null);
 
+  // Unscheduled card state
+  let unscheduledExpanded = $state(false);
+
   // Get trip days
   let tripDays = $derived(getTripDays(trip));
   
@@ -147,103 +150,137 @@
       });
     });
   }
+
+  function toggleUnscheduled() {
+    unscheduledExpanded = !unscheduledExpanded;
+  }
 </script>
 
-<div class="space-y-4 max-w-2xl mx-auto">
-  <!-- Trip Days -->
-  {#each tripDays as day (day.toDateString())}
-    {@const dayEvents = eventsByDay.grouped[day.toDateString()] || []}
-    <div class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden">
-      <!-- Day Header -->
-      <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
-        <div class="flex items-center justify-between">
-          <h2 class="font-semibold text-base">
-            {formatDate(day)}
-          </h2>
-          <Button 
-            onclick={() => handleNewEvent(day)} 
-            variant="ghost" 
-            size="sm"
-            class="h-8 px-2 text-xs"
-          >
-            <svg class="h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            Add
-          </Button>
+<!-- Main content container with proper spacing for fixed elements -->
+<div class="h-full overflow-y-auto" style="padding-bottom: {unscheduledExpanded ? '33.333vh' : '60px'};">
+  <div class="space-y-4 max-w-2xl mx-auto p-4">
+    <!-- Trip Days -->
+    {#each tripDays as day (day.toDateString())}
+      {@const dayEvents = eventsByDay.grouped[day.toDateString()] || []}
+      <div class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden">
+        <!-- Day Header -->
+        <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
+          <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-base">
+              {formatDate(day)}
+            </h2>
+            <Button 
+              onclick={() => handleNewEvent(day)} 
+              variant="ghost" 
+              size="sm"
+              class="h-8 px-2 text-xs"
+            >
+              <svg class="h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add
+            </Button>
+          </div>
+        </div>
+        
+        <!-- Day Events -->
+        <div>
+          {#if dayEvents.length > 0}
+            <div
+              use:dndzone={{
+                items: dayEvents,
+                flipDurationMs: 200,
+                dropTargetStyle: {},
+                dropFromOthersDisabled: false
+              }}
+              onconsider={(e) => handleDayConsider(day, e)}
+              onfinalize={(e) => handleDayFinalize(day, e)}
+            >
+              {#each dayEvents as event (event.id)}
+                <div animate:flip={{ duration: 200 }}>
+                  <EventCard
+                    {event}
+                    family={getFamilyById(event.familyId)}
+                    onclick={() => handleEventClick(event)}
+                    class="cursor-grab active:cursor-grabbing border-0 rounded-none border-b last:border-b-0 mx-1"
+                  />
+                </div>
+              {/each}
+            </div>
+          {:else}
+            <div class="py-8 text-center text-gray-400 text-sm">
+              No events scheduled for this day
+            </div>
+          {/if}
         </div>
       </div>
-      
-      <!-- Day Events -->
-      <div>
-        {#if dayEvents.length > 0}
-          <div
-            use:dndzone={{
-              items: dayEvents,
-              flipDurationMs: 200,
-              dropTargetStyle: {},
-              dropFromOthersDisabled: false
-            }}
-            onconsider={(e) => handleDayConsider(day, e)}
-            onfinalize={(e) => handleDayFinalize(day, e)}
-          >
-            {#each dayEvents as event (event.id)}
-              <div animate:flip={{ duration: 200 }}>
-                <EventCard
-                  {event}
-                  family={getFamilyById(event.familyId)}
-                  onclick={() => handleEventClick(event)}
-                  class="cursor-grab active:cursor-grabbing border-0 rounded-none border-b last:border-b-0 mx-1"
-                />
-              </div>
-            {/each}
-          </div>
-        {:else}
-          <div class="py-8 text-center text-gray-400 text-sm">
-            No events scheduled for this day
-          </div>
-        {/if}
-      </div>
-    </div>
-  {/each}
-
-  <!-- Unscheduled Events -->
-  {#if eventsByDay.unscheduled.length > 0}
-    <div class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden">
-      <!-- Header -->
-      <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
-        <h2 class="font-semibold text-base">Unscheduled</h2>
-      </div>
-      
-      <!-- Events -->
-      <div
-        use:dndzone={{
-          items: eventsByDay.unscheduled,
-          flipDurationMs: 200,
-          dropTargetStyle: {},
-          dropFromOthersDisabled: false
-        }}
-        onconsider={handleUnscheduledConsider}
-        onfinalize={handleUnscheduledFinalize}
-        class=""
-      >
-        {#each eventsByDay.unscheduled as event (event.id)}
-          <div animate:flip={{ duration: 200 }}>
-            <EventCard
-              {event}
-              family={getFamilyById(event.familyId)}
-              onclick={() => handleEventClick(event)}
-              class="cursor-grab active:cursor-grabbing border-0 rounded-none border-b last:border-b-0 mx-1"
-            />
-          </div>
-        {/each}
-      </div>
-    </div>
-  {/if}
+    {/each}
+  </div>
 </div>
 
-<!-- Floating Action Button -->
-<div class="fixed bottom-6 right-6 z-10">
+<!-- Fixed Unscheduled Card at bottom -->
+{#if eventsByDay.unscheduled.length > 0}
+  <div 
+    class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-600 transition-all duration-300 ease-in-out z-40"
+    style="height: {unscheduledExpanded ? '33.333vh' : '60px'}; box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);"
+  >
+    <!-- Header (always visible, clickable) -->
+    <div 
+      class="px-4 py-3 bg-gray-50 dark:bg-gray-700 cursor-pointer select-none flex items-center justify-between"
+      onclick={toggleUnscheduled}
+      role="button"
+      tabindex="0"
+      onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleUnscheduled()}
+    >
+      <h2 class="font-semibold text-base">Unscheduled ({eventsByDay.unscheduled.length})</h2>
+      <svg 
+        class="h-5 w-5 transition-transform duration-300"
+        style="transform: rotate({unscheduledExpanded ? '180deg' : '0deg'});"
+        xmlns="http://www.w3.org/2000/svg" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke="currentColor" 
+        stroke-width="2"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+    
+    <!-- Expandable content -->
+    {#if unscheduledExpanded}
+      <div class="flex-1 overflow-y-auto">
+        <div
+          use:dndzone={{
+            items: eventsByDay.unscheduled,
+            flipDurationMs: 200,
+            dropTargetStyle: {},
+            dropFromOthersDisabled: false
+          }}
+          onconsider={handleUnscheduledConsider}
+          onfinalize={handleUnscheduledFinalize}
+          class=""
+        >
+          {#each eventsByDay.unscheduled as event (event.id)}
+            <div animate:flip={{ duration: 200 }}>
+              <EventCard
+                {event}
+                family={getFamilyById(event.familyId)}
+                onclick={() => handleEventClick(event)}
+                class="cursor-grab active:cursor-grabbing border-0 rounded-none border-b last:border-b-0 mx-1"
+              />
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/if}
+  </div>
+{/if}
+
+<!-- Floating Action Button - positioned above unscheduled card -->
+<div 
+  class="fixed right-6 z-50"
+  style="bottom: {unscheduledExpanded ? 'calc(33.333vh + 1.5rem)' : '5rem'}; transition: bottom 0.3s ease-in-out;"
+>
   <Button 
     onclick={() => handleNewEvent()} 
     class="h-14 w-14 !rounded-full shadow-lg hover:shadow-xl transition-shadow"

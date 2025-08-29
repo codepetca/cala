@@ -36,8 +36,8 @@
   }
 </script>
 
-<nav class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-  <div class="flex h-14 items-center justify-between px-4">
+<nav class="border-b bg-white dark:bg-gray-900">
+  <div class="flex h-12 items-center justify-between px-4">
     <!-- Left: Logo -->
     <div class="flex items-center">
       <span class="text-2xl">🏝️</span>
