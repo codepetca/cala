@@ -175,7 +175,7 @@
       </div>
       
       <!-- Day Events -->
-      <div class="min-h-[80px]">
+      <div>
         {#if dayEvents.length > 0}
           <div
             use:dndzone={{
@@ -225,7 +225,7 @@
         }}
         onconsider={handleUnscheduledConsider}
         onfinalize={handleUnscheduledFinalize}
-        class="min-h-[80px]"
+        class=""
       >
         {#each eventsByDay.unscheduled as event (event.id)}
           <div animate:flip={{ duration: 200 }}>

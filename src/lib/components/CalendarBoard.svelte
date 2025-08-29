@@ -269,7 +269,7 @@
           onfinalize={(e) => handleDayFinalize(day, e)}
           role="region"
           aria-label="Day events container"
-          class="min-h-[100px] relative"
+          class="relative"
         >
           {#each dayEvents as event (event.id)}
             <div animate:flip={{ duration: 200 }}>
@@ -314,7 +314,7 @@
         }}
         onconsider={handleUnscheduledConsider}
         onfinalize={handleUnscheduledFinalize}
-        class="min-h-[80px]"
+        class=""
       >
         {#each unscheduledItems as event (event.id)}
           <div animate:flip={{ duration: 200 }}>
