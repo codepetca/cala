@@ -240,7 +240,7 @@
       {@const dayEvents = dayArrays[day.toDateString()] || []}
       <div class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden relative">
         <!-- Day Header -->
-        <div class="px-3 py-1 bg-gray-50 dark:bg-gray-700">
+        <div class="px-3 py-1 bg-white dark:bg-gray-900">
           <h3 class="font-medium text-xs">
             {formatDate(day)}
           </h3>
@@ -290,7 +290,7 @@
   {#if unscheduledItems.length > 0}
     <div class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden">
       <!-- Header -->
-      <div class="px-3 py-2 bg-gray-50 dark:bg-gray-700">
+      <div class="px-3 py-2 bg-white dark:bg-gray-900">
         <h3 class="font-medium text-sm">Unscheduled</h3>
       </div>
       

@@ -156,17 +156,37 @@
   }
 </script>
 
+<style>
+  /* Ensure dragged items remain visible */
+  :global(.drag-item.is-dragged) {
+    opacity: 0.8 !important;
+    transform: rotate(2deg) !important;
+    background-color: white !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+    z-index: 1000 !important;
+  }
+  
+  :global(.drag-item) {
+    background-color: inherit;
+  }
+  
+  /* Dark mode dragged items */
+  :global(.dark .drag-item.is-dragged) {
+    background-color: #1f2937 !important;
+  }
+</style>
+
 <!-- Main content container with proper spacing for fixed elements -->
-<div class="h-full overflow-y-auto" style="padding-bottom: {unscheduledExpanded ? '33.333vh' : '60px'};">
-  <div class="space-y-4 max-w-2xl mx-auto p-4">
+<div class="h-full overflow-y-auto bg-white dark:bg-gray-900" style="padding-bottom: {unscheduledExpanded ? '33.333vh' : '60px'};">
+  <div class="max-w-2xl mx-auto p-4">
     <!-- Trip Days -->
     {#each tripDays as day (day.toDateString())}
       {@const dayEvents = eventsByDay.grouped[day.toDateString()] || []}
-      <div class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-sm">
-        <!-- Day Header -->
-        <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
+      <div class="mb-4">
+        <!-- Day Header - floats on app background -->
+        <div class="px-4 py-1">
           <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-base">
+            <h2 class="font-semibold text-base text-gray-900 dark:text-gray-100">
               {formatDate(day)}
             </h2>
             <Button 
@@ -183,19 +203,22 @@
           </div>
         </div>
         
-        <!-- Day Events -->
-        <div>
-          {#if dayEvents.length > 0}
-            <div
-              use:dndzone={{
-                items: dayEvents,
-                flipDurationMs: 200,
-                dropTargetStyle: {},
-                dropFromOthersDisabled: false
-              }}
-              onconsider={(e) => handleDayConsider(day, e)}
-              onfinalize={(e) => handleDayFinalize(day, e)}
-            >
+        <!-- Day Events - in a card -->
+        {#if dayEvents.length > 0}
+          <div
+            class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-sm"
+            use:dndzone={{
+              items: dayEvents,
+              flipDurationMs: 200,
+              dropTargetStyle: {
+                outline: "rgba(255, 255, 255, 0.0) solid 2px",
+                backgroundColor: "transparent"
+              },
+              dropFromOthersDisabled: false
+            }}
+            onconsider={(e) => handleDayConsider(day, e)}
+            onfinalize={(e) => handleDayFinalize(day, e)}
+          >
               {#each dayEvents as event (event.id)}
                 <div animate:flip={{ duration: 200 }}>
                   <EventCard
@@ -212,7 +235,6 @@
               No events scheduled for this day
             </div>
           {/if}
-        </div>
       </div>
     {/each}
   </div>
@@ -226,7 +248,7 @@
   >
     <!-- Header (always visible, clickable) -->
     <div 
-      class="px-4 py-3 bg-gray-50 dark:bg-gray-700 cursor-pointer select-none flex items-center justify-between"
+      class="px-4 py-3 bg-white dark:bg-gray-900 cursor-pointer select-none flex items-center justify-between"
       onclick={toggleUnscheduled}
       role="button"
       tabindex="0"
@@ -253,7 +275,10 @@
           use:dndzone={{
             items: eventsByDay.unscheduled,
             flipDurationMs: 200,
-            dropTargetStyle: {},
+            dropTargetStyle: {
+              outline: "rgba(255, 255, 255, 0.0) solid 2px",
+              backgroundColor: "transparent"
+            },
             dropFromOthersDisabled: false
           }}
           onconsider={handleUnscheduledConsider}
