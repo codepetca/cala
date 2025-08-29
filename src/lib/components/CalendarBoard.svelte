@@ -235,12 +235,12 @@
 
 <div class="space-y-2">
   <!-- Calendar Grid -->
-  <div class="grid gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  <div class="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
     {#each tripDays as day (day.toDateString())}
       {@const dayEvents = dayArrays[day.toDateString()] || []}
       <div class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden relative">
         <!-- Day Header -->
-        <div class="px-3 py-2 bg-gray-50 dark:bg-gray-700">
+        <div class="px-3 py-1 bg-gray-50 dark:bg-gray-700">
           <h3 class="font-medium text-xs">
             {formatDate(day)}
           </h3>

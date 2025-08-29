@@ -3,6 +3,7 @@
   import { tripStore } from '$lib/stores';
   import { generateId, type Trip, type Family, type Event } from '$lib/schemas';
   import CalendarBoard from '$lib/components/CalendarBoard.svelte';
+  import ListView from '$lib/components/ListView.svelte';
   import Button from '$lib/components/ui/button.svelte';
 
   let mounted = $state(false);
@@ -203,11 +204,19 @@
 
 {#if mounted}
   {#if tripStore.currentTrip}
-    <CalendarBoard 
-      trip={tripStore.currentTrip} 
-      filteredEvents={tripStore.filteredEvents}
-      oneventclick={(event) => console.log('Event clicked:', event)}
-    />
+    {#if tripStore.currentViewMode === 'calendar'}
+      <CalendarBoard 
+        trip={tripStore.currentTrip} 
+        filteredEvents={tripStore.filteredEvents}
+        oneventclick={(event) => console.log('Event clicked:', event)}
+      />
+    {:else}
+      <ListView 
+        trip={tripStore.currentTrip} 
+        filteredEvents={tripStore.filteredEvents}
+        oneventclick={(event) => console.log('Event clicked:', event)}
+      />
+    {/if}
   {:else}
     <div class="text-center py-12">
       <h2 class="text-xl font-semibold mb-4">No trips found</h2>

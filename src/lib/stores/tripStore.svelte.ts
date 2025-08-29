@@ -1,16 +1,21 @@
 import { storageRepository } from '$lib/repositories/storageRepository';
 import { generateId, parseTrip, parseEvent, parseFamily, type Trip, type Event, type Family } from '$lib/schemas';
 import { getTripDays } from '$lib/utils/trip.utils';
+import { isMobileDevice } from '$lib/utils/device.utils';
+
+// View mode types
+export type ViewMode = 'calendar' | 'list';
 
 /**
  * Trip store using Svelte 5 runes
- * Manages trips, events, families, and filtering state
+ * Manages trips, events, families, filtering state, and view mode
  */
 class TripStore {
   // Core reactive state
   private trips = $state<Trip[]>([]);
   private currentTripId = $state<string | null>(null);
   private selectedFamilyId = $state<string | null>(null);
+  private viewMode = $state<ViewMode>(this.getInitialViewMode());
 
   // Derived reactive values
   currentTrip = $derived(
@@ -58,6 +63,11 @@ class TripStore {
       familyCount: trip.families.length,
     };
   })());
+
+  // Current view mode getter
+  get currentViewMode(): ViewMode {
+    return this.viewMode;
+  }
 
   constructor() {
     this.loadFromStorage();
@@ -270,6 +280,49 @@ class TripStore {
    */
   getCurrentFamilyFilter(): string | null {
     return this.selectedFamilyId;
+  }
+
+  // === View Mode Operations ===
+
+  /**
+   * Set view mode
+   */
+  setViewMode(mode: ViewMode): void {
+    this.viewMode = mode;
+    this.saveViewModePreference(mode);
+  }
+
+  /**
+   * Toggle between available view modes
+   */
+  toggleViewMode(): void {
+    const newMode = this.viewMode === 'calendar' ? 'list' : 'calendar';
+    this.setViewMode(newMode);
+  }
+
+  /**
+   * Get initial view mode based on device and stored preference
+   */
+  private getInitialViewMode(): ViewMode {
+    if (typeof window === 'undefined') return 'calendar';
+    
+    // Check for stored user preference
+    const stored = localStorage.getItem('tripViewMode');
+    if (stored === 'calendar' || stored === 'list') {
+      return stored;
+    }
+    
+    // Default based on device
+    return isMobileDevice() ? 'list' : 'calendar';
+  }
+
+  /**
+   * Save view mode preference to localStorage
+   */
+  private saveViewModePreference(mode: ViewMode): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tripViewMode', mode);
+    }
   }
 
   // === Utility Methods ===
