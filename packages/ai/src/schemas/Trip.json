@@ -1,0 +1,73 @@
+{
+  "metadata": {
+    "name": "Trip",
+    "description": "A travel itinerary container",
+    "version": "1.0.0",
+    "generatedAt": "2025-09-07T02:07:47.409Z",
+    "sourceSchema": "@trip-planner/domain/schemas/Trip"
+  },
+  "schema": {
+    "$ref": "definitions/Trip",
+    "definitions": {
+      "Trip": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique trip identifier"
+          },
+          "workspaceId": {
+            "type": "string",
+            "description": "ID of the workspace this trip belongs to"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Trip name/title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Optional trip description"
+          },
+          "timezone": {
+            "type": "string",
+            "default": "UTC",
+            "description": "Trip timezone (IANA timezone identifier)"
+          },
+          "isPublic": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this trip is publicly shareable"
+          },
+          "shareSlug": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique slug for public sharing"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the trip was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the trip was last updated"
+          }
+        },
+        "required": [
+          "id",
+          "workspaceId",
+          "name",
+          "shareSlug",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "name": "Workspace",
+    "description": "Collaborative workspace for trip planning",
+    "version": "1.0.0",
+    "generatedAt": "2025-09-07T02:07:47.409Z",
+    "sourceSchema": "@trip-planner/domain/schemas/Workspace"
+  },
+  "schema": {
+    "$ref": "definitions/Workspace",
+    "definitions": {
+      "Workspace": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique workspace identifier"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Workspace name"
+          },
+          "ownerId": {
+            "type": "string",
+            "description": "ID of the user who owns this workspace"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the workspace was created"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "ownerId",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

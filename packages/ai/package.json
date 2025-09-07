@@ -1,0 +1,32 @@
+{
+  "name": "@trip-planner/ai",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "npm run generate && tsc",
+    "dev": "concurrently \"npm run generate:watch\" \"tsc --watch\"",
+    "generate": "tsx src/generate-schemas.ts",
+    "generate:watch": "tsx src/generate-schemas.ts --watch",
+    "validate-schemas": "tsx src/validate-schemas.ts",
+    "lint": "eslint src --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@trip-planner/domain": "workspace:*",
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "typescript": "^5.4.5",
+    "tsx": "^4.7.1",
+    "vitest": "^1.4.0",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "concurrently": "^8.2.2"
+  }
+}

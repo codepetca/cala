@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "name": "WorkspaceMembership",
+    "description": "User membership in a workspace",
+    "version": "1.0.0",
+    "generatedAt": "2025-09-07T02:07:47.410Z",
+    "sourceSchema": "@trip-planner/domain/schemas/WorkspaceMembership"
+  },
+  "schema": {
+    "$ref": "definitions/WorkspaceMembership",
+    "definitions": {
+      "WorkspaceMembership": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique membership identifier"
+          },
+          "workspaceId": {
+            "type": "string",
+            "description": "ID of the workspace"
+          },
+          "userId": {
+            "type": "string",
+            "description": "ID of the user"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "viewer",
+              "editor",
+              "owner"
+            ],
+            "description": "User role in this workspace"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the membership was created"
+          }
+        },
+        "required": [
+          "id",
+          "workspaceId",
+          "userId",
+          "role",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "name": "AllDayEvent",
+    "description": "Event scheduled for full day(s)",
+    "version": "1.0.0",
+    "generatedAt": "2025-09-07T02:07:47.409Z",
+    "sourceSchema": "@trip-planner/domain/schemas/AllDayEvent"
+  },
+  "schema": {
+    "$ref": "definitions/AllDayEvent",
+    "definitions": {
+      "AllDayEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the event"
+          },
+          "tripId": {
+            "type": "string",
+            "description": "ID of the trip this event belongs to"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Event title/summary"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Optional detailed notes about the event"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this event was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this event was last updated"
+          },
+          "kind": {
+            "type": "string",
+            "const": "allDay",
+            "description": "Event scheduled for full day(s)"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "First day of the event (YYYY-MM-DD)"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last day of the event (YYYY-MM-DD), defaults to startDate"
+          }
+        },
+        "required": [
+          "id",
+          "tripId",
+          "title",
+          "createdAt",
+          "updatedAt",
+          "kind",
+          "startDate"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

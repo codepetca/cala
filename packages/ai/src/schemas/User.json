@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "name": "User",
+    "description": "Application user",
+    "version": "1.0.0",
+    "generatedAt": "2025-09-07T02:07:47.409Z",
+    "sourceSchema": "@trip-planner/domain/schemas/User"
+  },
+  "schema": {
+    "$ref": "definitions/User",
+    "definitions": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user identifier"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "User display name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address (unique)"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the user account was created"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

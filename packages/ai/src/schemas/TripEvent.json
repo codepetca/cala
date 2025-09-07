@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "name": "TripEvent",
+    "description": "A trip event that can be unscheduled, all-day, or timed",
+    "version": "1.0.0",
+    "generatedAt": "2025-09-07T02:07:47.406Z",
+    "sourceSchema": "@trip-planner/domain/schemas/TripEvent"
+  },
+  "schema": {
+    "$ref": "definitions/TripEvent",
+    "definitions": {
+      "TripEvent": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the event"
+              },
+              "tripId": {
+                "type": "string",
+                "description": "ID of the trip this event belongs to"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100,
+                "description": "Event title/summary"
+              },
+              "notes": {
+                "type": "string",
+                "maxLength": 2000,
+                "description": "Optional detailed notes about the event"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When this event was created"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When this event was last updated"
+              },
+              "kind": {
+                "type": "string",
+                "const": "unscheduled",
+                "description": "Event has no scheduled time"
+              }
+            },
+            "required": [
+              "id",
+              "tripId",
+              "title",
+              "createdAt",
+              "updatedAt",
+              "kind"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "3/0/properties/id"
+              },
+              "tripId": {
+                "$ref": "3/0/properties/tripId"
+              },
+              "title": {
+                "$ref": "3/0/properties/title"
+              },
+              "notes": {
+                "$ref": "3/0/properties/notes"
+              },
+              "createdAt": {
+                "$ref": "3/0/properties/createdAt"
+              },
+              "updatedAt": {
+                "$ref": "3/0/properties/updatedAt"
+              },
+              "kind": {
+                "type": "string",
+                "const": "allDay",
+                "description": "Event scheduled for full day(s)"
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date-time",
+                "description": "First day of the event (YYYY-MM-DD)"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Last day of the event (YYYY-MM-DD), defaults to startDate"
+              }
+            },
+            "required": [
+              "id",
+              "tripId",
+              "title",
+              "createdAt",
+              "updatedAt",
+              "kind",
+              "startDate"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "3/0/properties/id"
+              },
+              "tripId": {
+                "$ref": "3/0/properties/tripId"
+              },
+              "title": {
+                "$ref": "3/0/properties/title"
+              },
+              "notes": {
+                "$ref": "3/0/properties/notes"
+              },
+              "createdAt": {
+                "$ref": "3/0/properties/createdAt"
+              },
+              "updatedAt": {
+                "$ref": "3/0/properties/updatedAt"
+              },
+              "kind": {
+                "type": "string",
+                "const": "timed",
+                "description": "Event with specific start/end times"
+              },
+              "startDateTime": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Event start date and time (ISO 8601)"
+              },
+              "endDateTime": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Event end date and time (ISO 8601)"
+              }
+            },
+            "required": [
+              "id",
+              "tripId",
+              "title",
+              "createdAt",
+              "updatedAt",
+              "kind",
+              "startDateTime",
+              "endDateTime"
+            ],
+            "additionalProperties": false
+          }
+        ],
+        "description": "A trip event that can be unscheduled, all-day, or timed"
+      }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}
