@@ -3,7 +3,7 @@
     "name": "Workspace",
     "description": "Collaborative workspace for trip planning",
     "version": "1.0.0",
-    "generatedAt": "2025-09-07T02:07:47.409Z",
+    "generatedAt": "2025-09-07T02:14:32.844Z",
     "sourceSchema": "@trip-planner/domain/schemas/Workspace"
   },
   "schema": {
