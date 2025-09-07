@@ -37,3 +37,52 @@ body {
 .form-label {
   @apply block text-sm font-medium text-gray-700 mb-1;
 }
+
+/* Drag and drop utilities */
+.dragging {
+  @apply opacity-50 scale-95;
+}
+
+.drag-over {
+  @apply bg-blue-50 border-blue-300;
+}
+
+/* Line clamping utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Calendar grid utilities */
+.calendar-day {
+  @apply min-h-[120px] border-r border-b border-gray-200 last:border-r-0 p-2;
+}
+
+.calendar-day:hover {
+  @apply bg-gray-50;
+}
+
+/* Event card animations */
+.event-card {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.event-card:hover {
+  @apply shadow-md transform scale-[1.02];
+}

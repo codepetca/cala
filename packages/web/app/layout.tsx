@@ -16,8 +16,8 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          <main className="max-w-6xl mx-auto p-4">
-            <ConditionalHeader />
+          <ConditionalHeader />
+          <main>
             {children}
           </main>
         </Providers>

@@ -4,129 +4,204 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Core Development
+### Core Development (Monorepo)
 ```bash
-pnpm install         # Install all dependencies
-pnpm dev            # Start Next.js dev server + Convex sync
-pnpm build          # Production build
-pnpm lint           # ESLint + autofix
-pnpm typecheck      # TypeScript strict checking
+pnpm install                 # Install all dependencies across packages
+pnpm dev                     # Start all development servers (Next.js + Convex)
+pnpm dev:web                 # Start only Next.js frontend
+pnpm dev:convex              # Start only Convex backend
+
+pnpm build                   # Build all packages for production
+pnpm lint                    # ESLint + autofix across all packages  
+pnpm typecheck               # TypeScript strict checking across monorepo
+```
+
+### Schema-First Development
+```bash
+pnpm generate:schemas        # Generate JSON schemas from Zod (AI package)
+pnpm validate:schemas        # Validate schema consistency across packages
 ```
 
 ### Testing
 ```bash
-pnpm test           # Run all unit/integration tests (Vitest)
-pnpm test:watch     # Run tests in watch mode
-pnpm test:e2e       # Run E2E tests (Playwright)
+pnpm test                    # Run all tests (unit/integration)
+pnpm test:watch              # Run tests in watch mode
+pnpm test:e2e                # Run E2E tests (Playwright)
+pnpm test:integration        # Run integration tests only
+pnpm ci:check                # Full CI pipeline (schemas + typecheck + test)
 
 # Run specific tests
-npx vitest convex/test/items.test.ts    # Single Convex function test
-npx vitest tests/ItemEditor.test.tsx    # Single component test  
-npx playwright test tests/e2e/tripPlanner.spec.ts  # Single E2E test
+npx vitest tests/EventEditor.test.tsx                    # Single component test
+npx playwright test tests/e2e/tripPlanner.spec.ts       # Single E2E test  
+npx vitest tests/integration/domain-backend-integration.test.ts  # Integration test
 ```
 
-### Convex Backend
+### Backend Development
 ```bash
-npx convex dev      # Start Convex development (run once per project)
-npx convex deploy   # Deploy backend to production
-npx convex dashboard # Open Convex admin dashboard
+cd packages/backend
+pnpm convex:dev              # Start Convex development server
+pnpm convex:deploy           # Deploy backend to production  
+npx convex dashboard         # Open Convex admin dashboard
+npx convex run seed:seed     # Seed demo data for development
 ```
 
-## Architecture Overview
+## Monorepo Architecture
 
-### Tech Stack & Data Flow
-- **Frontend**: Next.js App Router with Server Components by default
-- **Backend**: Convex handles database, auth, real-time sync, and API functions
-- **Data Flow**: React → Convex queries/mutations → Convex database → Real-time sync back to React
+### Package Structure
+```
+packages/
+├── domain/          # Zod schemas & domain logic (source of truth)
+├── backend/         # Convex serverless functions & database
+├── ai/              # AI integration & automatic schema generation
+└── web/             # Next.js frontend application
+```
 
-### Database Schema (Convex)
+### Schema-First Data Flow
+```
+Domain (Zod) → AI (JSON Schema) → Backend (Convex) → Frontend (React)
+     ↓              ↓                 ↓                ↓
+   Types         AI Context      Validation        UI Types
+```
+
+**Critical Pattern**: Domain package defines ALL data structures using Zod. AI package automatically generates JSON schemas. Backend and frontend consume these schemas for validation and typing.
+
+### Database Schema (Updated Architecture)
+
 Core entity relationships:
 ```
-Users → Memberships ← Workspaces → Plans → Items
-         (roles)                   (scheduled/unscheduled)
+Users → WorkspaceMemberships ← Workspaces → Trips → TripEvents
+         (roles)                                    (discriminated unions)
 ```
 
 Key tables:
 - `users` - Authentication and profile data
-- `workspaces` - Collaboration boundaries with ownership
-- `memberships` - User-workspace relationships with roles (`owner`/`editor`/`viewer`)  
-- `plans` - Trip plans with optional public sharing via `shareSlug`
-- `items` - Plan items that can be scheduled (with dates) or unscheduled (no dates)
+- `workspaces` - Collaboration boundaries with ownership  
+- `workspaceMemberships` - User-workspace relationships with roles (`owner`/`editor`/`viewer`)
+- `trips` - Trip containers with optional public sharing via `shareSlug`
+- `tripEvents` - **Discriminated union events** with three variants:
+  - `unscheduled` - Brainstorming/backlog items (no dates)
+  - `allDay` - Full-day events with `startDate`/`endDate`
+  - `timed` - Precise events with `startDateTime`/`endDateTime`
 
-### Permission System
-- **Workspace-scoped**: All data operations require workspace membership
-- **Role hierarchy**: `owner` > `editor` > `viewer` for permissions
-- **Public sharing**: Plans can be made public for read-only access via share links
-- **Server-side enforcement**: All permission checks happen in Convex functions
+### Trip Event Discriminated Unions
 
-### Component Architecture Patterns
+**Core Concept**: Events use discriminated unions based on `kind` field:
 
-**Server Components (default)**: All page components and non-interactive elements
-**Client Components**: Only for forms, modals, and interactive UI requiring hooks
+```typescript
+type TripEvent = 
+  | { kind: 'unscheduled'; title: string; notes?: string; }
+  | { kind: 'allDay'; title: string; startDate: string; endDate?: string; }
+  | { kind: 'timed'; title: string; startDateTime: string; endDateTime: string; }
+```
 
-Key Client Components:
-- `ItemEditor` - Modal for creating/editing items with date management
-- `PlanView` - Main plan interface with scheduled/unscheduled item separation  
-- `AuthButton` - Convex auth integration with magic link signin
+**Business Logic**: Events can transition between types:
+- `unscheduled` → `allDay` (add dates)
+- `unscheduled` → `timed` (add precise times) 
+- `allDay` → `timed` (add specific times)
+- Any type → `unscheduled` (remove scheduling)
+
+## Component Architecture
+
+### Frontend Structure (packages/web/)
+```
+app/
+├── components/
+│   ├── EventEditor.tsx      # CRUD for trip events with discriminated unions
+│   ├── TripView.tsx         # Main trip interface with event management
+│   ├── TripList.tsx         # Trip listing and creation within workspaces
+│   ├── ShareView.tsx        # Public trip sharing (read-only)
+│   └── WorkspaceList.tsx    # Workspace management and selection
+├── trips/[tripId]/          # Trip-specific pages
+├── workspace/[workspaceId]/ # Workspace management pages
+└── share/[shareSlug]/       # Public sharing pages
+```
+
+### Key Patterns
+
+**Client vs Server Components**:
+- Server Components (default): All pages, static content, data fetching
+- Client Components (explicit): Forms, modals, real-time interactions, state management
+
+**Component Conventions**:
+```typescript
+// Add data-testid for E2E testing
+<form data-testid="create-trip-form">
+  <input data-testid="trip-name-input" />
+</form>
+
+// Use discriminated unions properly
+const handleEventKind = (event: TripEvent) => {
+  switch (event.kind) {
+    case 'unscheduled': return renderBacklog(event);
+    case 'allDay': return renderAllDay(event);  
+    case 'timed': return renderTimed(event);
+  }
+};
+```
 
 ## Development Workflow
 
 ### Adding New Features
-1. **Start with Convex schema** (`convex/schema.ts`) - add tables/fields with proper indexes
-2. **Create Convex functions** - queries for reads, mutations for writes, all with Zod validation
-3. **Add permission checks** - use `requireWorkspaceMembership()` helper in mutations
-4. **Write Convex tests** - test business logic and validation with `ConvexTestingHelper`
-5. **Build React components** - Server Components first, Client Components only when needed
-6. **Add component tests** - mock Convex hooks and test user interactions
-7. **Create E2E tests** - test full user flows with Playwright
 
-### Critical Patterns
+1. **Start with Domain Schema** (`packages/domain/src/schemas/`) - Define Zod schemas with proper validation
+2. **Generate Schemas** (`pnpm generate:schemas`) - Auto-generate JSON schemas for AI
+3. **Create Backend Functions** (`packages/backend/convex/`) - Implement queries/mutations with schema validation
+4. **Build Frontend Components** (`packages/web/app/components/`) - Use generated types from domain
+5. **Add Tests** - Unit tests for domain logic, integration tests for backend, E2E for user flows
+6. **Validate Integration** (`pnpm ci:check`) - Ensure all packages work together
 
-**Input Validation**: All external inputs validated with Zod schemas at Convex boundaries
-```typescript
-const itemInput = z.object({
-  title: z.string().min(1).max(100),
-  start: z.number().optional(),
-  end: z.number().optional(),
-});
-```
+### Schema Evolution
 
-**Authentication**: Check auth in all mutations
-```typescript
-const identity = await ctx.auth.getUserIdentity();
-if (!identity) throw new Error('Not authenticated');
-```
+**Important**: When modifying schemas in `packages/domain/`, run `pnpm generate:schemas` to update AI integration and ensure all packages stay in sync.
 
-**Permissions**: Enforce workspace membership in all functions
-```typescript
-await requireWorkspaceMembership(ctx, workspaceId, 'editor');
-```
+### Permission System
 
-**Date Handling**: Store UTC, display local timezone using `date-fns-tz`
+All data operations require workspace membership with role-based access:
+- **owner** - Full CRUD + workspace management
+- **editor** - CRUD on trips/events within workspace
+- **viewer** - Read-only access to workspace content
 
-### Key Business Rules
-- **Items can be unscheduled**: Items without start dates are valid and first-class
-- **End ≥ Start**: When both dates set, end must be same day or later than start  
-- **UTC timestamps**: All dates stored in UTC, converted to local timezone for display
-- **Workspace isolation**: Plans and items are scoped to workspace boundaries
-- **Public sharing**: Public plans accessible via share slug without authentication
+**Implementation**: Use `requireWorkspaceMembership()` helper in all Convex mutations.
 
-### Styling System
-- **Tailwind CSS** with custom component classes in `globals.css`
-- **Component classes**: `.btn`, `.btn-primary`, `.card`, `.form-input`, `.form-label`
-- **Accessibility**: Focus management, ARIA labels, semantic HTML structure
+## Testing Strategy
 
-### Testing Strategy
-- **Unit tests**: Convex functions, Zod validators (Vitest)
-- **Component tests**: React components with mocked Convex hooks (React Testing Library)  
-- **E2E tests**: Full user flows including auth, CRUD operations, real-time sync (Playwright)
+### E2E Test Agent System
+
+Located in `.claude/agents/` - specialized agents for handling test failures:
+- **E2E Test Agent** - Coordinates test execution and issue analysis
+- **Frontend Specialist** - Handles UI/component issues  
+- **Backend Specialist** - Manages database and API issues
+
+**Usage**: When E2E tests fail, check agent recommendations in test output.
+
+### Test Coverage Areas
+- **Domain Logic**: Zod schema validation and business rules
+- **Backend Functions**: Convex queries/mutations with permission testing
+- **Frontend Components**: React component behavior with mocked Convex
+- **Integration**: Cross-package data flow and schema consistency
+- **E2E**: Complete user journeys including real-time sync
 
 ## Domain Knowledge
 
-**Scheduled vs Unscheduled Items**: Core concept where items can exist without dates for brainstorming, then be scheduled later by adding start/end dates.
+### Core Business Concepts
 
-**Real-time Collaboration**: All data changes sync immediately across browser tabs/users via Convex's built-in real-time system.
+**Unscheduled-First Design**: Events can exist without dates for brainstorming, then be scheduled later. This is a first-class concept, not a temporary state.
 
-**Role-based Access**: Three-tier permission system (owner/editor/viewer) enforced server-side in all Convex functions.
+**Event State Transitions**: Events flow naturally from unscheduled → scheduled (all-day or timed) → back to unscheduled, supporting flexible trip planning workflows.
 
-See `docs/DOMAIN.md` for complete business rules and `docs/AI_GUIDE.md` for detailed development patterns.
+**Real-time Collaboration**: All changes sync immediately across clients via Convex's built-in reactivity. No additional WebSocket setup required.
+
+**Workspace Isolation**: All data is scoped to workspaces with strict permission boundaries enforced server-side.
+
+### Schema Integration Points
+
+**Critical**: The domain package is the single source of truth. Backend Convex schemas and frontend TypeScript types are derived from domain Zod schemas. Never define schemas in multiple places.
+
+**AI Integration**: JSON schemas are automatically generated for AI context. The AI package provides utilities for working with structured trip data in AI workflows.
+
+## Styling & UI
+
+- **Tailwind CSS** with custom component classes in `packages/web/app/globals.css`
+- **Component Classes**: `.btn`, `.btn-primary`, `.card`, `.form-input`, `.form-textarea`, `.form-label`
+- **Accessibility**: ARIA labels, semantic HTML, keyboard navigation
+- **Responsive**: Mobile-first design with responsive breakpoints
