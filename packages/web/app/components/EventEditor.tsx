@@ -105,16 +105,16 @@ export default function EventEditor({ tripId, onClose, event }: EventEditorProps
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit} className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-foreground">
               {event ? 'Edit Event' : 'New Event'}
             </h2>
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-muted-foreground hover:text-muted-foreground"
               disabled={isSubmitting}
             >
               <span className="sr-only">Close</span>
@@ -190,7 +190,7 @@ export default function EventEditor({ tripId, onClose, event }: EventEditorProps
                 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label htmlFor="startDate" className="block text-xs text-gray-600 mb-1">
+                    <label htmlFor="startDate" className="block text-xs text-muted-foreground mb-1">
                       Start Date
                     </label>
                     <input
@@ -204,7 +204,7 @@ export default function EventEditor({ tripId, onClose, event }: EventEditorProps
                   </div>
                   
                   <div>
-                    <label htmlFor="endDate" className="block text-xs text-gray-600 mb-1">
+                    <label htmlFor="endDate" className="block text-xs text-muted-foreground mb-1">
                       End Date
                     </label>
                     <input
@@ -219,7 +219,7 @@ export default function EventEditor({ tripId, onClose, event }: EventEditorProps
                   </div>
                 </div>
                 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Event will run for the entire day(s) specified
                 </p>
               </div>
@@ -243,7 +243,7 @@ export default function EventEditor({ tripId, onClose, event }: EventEditorProps
                 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label htmlFor="startDateTime" className="block text-xs text-gray-600 mb-1">
+                    <label htmlFor="startDateTime" className="block text-xs text-muted-foreground mb-1">
                       Start Date & Time
                     </label>
                     <input
@@ -257,7 +257,7 @@ export default function EventEditor({ tripId, onClose, event }: EventEditorProps
                   </div>
                   
                   <div>
-                    <label htmlFor="endDateTime" className="block text-xs text-gray-600 mb-1">
+                    <label htmlFor="endDateTime" className="block text-xs text-muted-foreground mb-1">
                       End Date & Time
                     </label>
                     <input
@@ -272,7 +272,7 @@ export default function EventEditor({ tripId, onClose, event }: EventEditorProps
                   </div>
                 </div>
                 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Event will have specific start and end times
                 </p>
               </div>

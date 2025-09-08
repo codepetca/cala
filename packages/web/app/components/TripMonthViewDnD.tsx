@@ -112,7 +112,7 @@ function DraggableEvent({
           ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 border border-blue-200'
           : event.kind === 'timed'
           ? 'bg-green-100 text-green-800 hover:bg-green-200 border border-green-200'
-          : 'bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-200'
+          : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border'
         }
         ${isSelected ? 'ring-2 ring-blue-500 ring-offset-1' : ''}
         ${isDragging ? 'opacity-30' : 'hover:shadow-md hover:scale-105'}
@@ -177,8 +177,8 @@ function DroppableDay({
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[120px] border-r border-b border-gray-200 last:border-r-0 p-2 transition-all duration-200 ${
-        isCurrentMonth ? 'bg-white' : 'bg-gray-50'
+      className={`min-h-[120px] border-r border-b border-border last:border-r-0 p-2 transition-all duration-200 ${
+        isCurrentMonth ? 'bg-card' : 'bg-muted/50'
       } ${isDragOver ? 'bg-gradient-to-br from-blue-50 to-purple-50 ring-2 ring-blue-400 ring-offset-1 shadow-lg' : ''} group`}
       data-date={dateStr}
       role="gridcell"
@@ -277,7 +277,7 @@ function DroppableUnscheduledArea({
   return (
     <div 
       ref={setNodeRef}
-      className={`p-4 border-b border-gray-200 transition-all duration-200 ${
+      className={`p-4 border-b border-border transition-all duration-200 ${
         isDragOver ? 'bg-gradient-to-br from-yellow-50 to-amber-50 ring-2 ring-yellow-400 ring-offset-1 shadow-lg' : ''
       }`}
       role="region"
@@ -297,7 +297,7 @@ function DroppableUnscheduledArea({
             onDelete={_onDelete}
             onClick={onClick}
             isSelected={selectedEvent?._id === event._id}
-            className="p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100"
+            className="p-3 bg-muted/50 rounded-lg border border-border hover:bg-secondary"
           />
         ))}
         
@@ -657,13 +657,13 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="h-screen flex flex-col bg-gray-50">
+      <div className="h-screen flex flex-col bg-muted/50">
         {/* Main Content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Calendar View */}
           <div className="flex-1 flex flex-col">
             {/* Calendar Header */}
-            <div className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="bg-card border-b border-border px-6 py-4">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-gray-900">
                   {format(currentMonth, 'MMMM yyyy')}
@@ -671,19 +671,19 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                    className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                    className="p-2 hover:bg-secondary rounded-md transition-colors"
                   >
                     ←
                   </button>
                   <button
                     onClick={() => setCurrentMonth(new Date())}
-                    className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                    className="px-3 py-1 text-sm bg-secondary hover:bg-secondary/80 rounded-md transition-colors"
                   >
                     Today
                   </button>
                   <button
                     onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                    className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                    className="p-2 hover:bg-secondary rounded-md transition-colors"
                   >
                     →
                   </button>
@@ -693,11 +693,11 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
 
             {/* Calendar Grid */}
             <div className="flex-1 overflow-auto p-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="bg-card rounded-lg shadow-sm border border-border">
                 {/* Day headers */}
-                <div className="grid grid-cols-7 border-b border-gray-200">
+                <div className="grid grid-cols-7 border-b border-border">
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                    <div key={day} className="p-3 text-center text-sm font-medium text-gray-500 border-r border-gray-200 last:border-r-0">
+                    <div key={day} className="p-3 text-center text-sm font-medium text-gray-500 border-r border-border last:border-r-0">
                       {day}
                     </div>
                   ))}
@@ -734,7 +734,7 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
           </div>
 
           {/* Sidebar */}
-          <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
+          <div className="w-80 bg-card border-l border-border flex flex-col">
             {/* Unscheduled Events */}
             <DroppableUnscheduledArea
               events={unscheduledEvents}
@@ -758,7 +758,7 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
                           ? 'bg-blue-100 text-blue-800' 
                           : selectedEvent.kind === 'timed'
                           ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
+                          : 'bg-secondary text-secondary-foreground'
                       }`}>
                         {selectedEvent.kind === 'allDay' ? 'All Day' : 
                          selectedEvent.kind === 'timed' ? 'Timed' : 'Unscheduled'}
@@ -768,12 +768,12 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
                   
                   {selectedEvent.notes && (
                     <div>
-                      <div className="text-xs font-medium text-gray-700 mb-1">Notes</div>
+                      <div className="text-xs font-medium text-secondary-foreground mb-1">Notes</div>
                       <div className="text-sm text-gray-600">{selectedEvent.notes}</div>
                     </div>
                   )}
                   
-                  <div className="flex gap-2 pt-3 border-t border-gray-200">
+                  <div className="flex gap-2 pt-3 border-t border-border">
                     <button
                       onClick={() => handleEditEvent(selectedEvent)}
                       className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -783,7 +783,7 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
                     {selectedEvent.kind !== 'unscheduled' && (
                       <button
                         onClick={() => handleUnscheduleEvent(selectedEvent)}
-                        className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                        className="px-3 py-2 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors"
                       >
                         Unschedule
                       </button>

@@ -120,7 +120,7 @@ function DraggableListItem({
       case 'timed':
         return 'border-green-200 bg-green-50 text-green-800';
       case 'unscheduled':
-        return 'border-gray-200 bg-gray-50 text-gray-800';
+        return 'border-border bg-muted/50 text-foreground';
     }
   };
 
@@ -147,16 +147,16 @@ function DraggableListItem({
               {...listeners}
               className="opacity-0 group-hover:opacity-100 p-1 cursor-grab active:cursor-grabbing"
             >
-              <GripVertical className="w-4 h-4 text-gray-400" />
+              <GripVertical className="w-4 h-4 text-muted-foreground" />
             </div>
           </div>
           
           {event.notes && (
-            <p className="text-sm text-gray-600 mb-2 line-clamp-2">{event.notes}</p>
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{event.notes}</p>
           )}
           
           {formatEventTime(event) && (
-            <div className="text-xs text-gray-500 mb-2">
+            <div className="text-xs text-muted-foreground mb-2">
               {formatEventTime(event)}
             </div>
           )}
@@ -168,7 +168,7 @@ function DraggableListItem({
               e.stopPropagation();
               onEdit(event);
             }}
-            className="p-1 text-gray-400 hover:text-blue-600 rounded"
+            className="p-1 text-muted-foreground hover:text-blue-600 rounded"
             title="Edit"
           >
             <Edit className="w-4 h-4" />
@@ -180,7 +180,7 @@ function DraggableListItem({
                 e.stopPropagation();
                 onUnschedule(event);
               }}
-              className="p-1 text-gray-400 hover:text-yellow-600 rounded"
+              className="p-1 text-muted-foreground hover:text-yellow-600 rounded"
               title="Unschedule"
             >
               <CalendarX className="w-4 h-4" />
@@ -192,7 +192,7 @@ function DraggableListItem({
               e.stopPropagation();
               onDelete(event);
             }}
-            className="p-1 text-gray-400 hover:text-red-600 rounded"
+            className="p-1 text-muted-foreground hover:text-red-600 rounded"
             title="Delete"
           >
             <Trash2 className="w-4 h-4" />
@@ -242,23 +242,23 @@ function DroppableDay({
     <div
       ref={setNodeRef}
       className={`
-        border-b border-gray-100 last:border-b-0 transition-colors duration-200
+        border-b border-border last:border-b-0 transition-colors duration-200
         ${isDragOver ? 'bg-blue-50 border-blue-200' : ''}
       `}
     >
       {/* Day Header */}
       <div className={`
-        sticky top-0 z-10 bg-white px-4 py-3 border-b border-gray-100
+        sticky top-0 z-10 bg-card px-4 py-3 border-b border-border
         ${isToday ? 'bg-blue-50 border-blue-200' : ''}
       `}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Calendar className="w-4 h-4 text-gray-400" />
+            <Calendar className="w-4 h-4 text-muted-foreground" />
             <div>
-              <h3 className={`font-medium ${isToday ? 'text-blue-900' : 'text-gray-900'}`}>
+              <h3 className={`font-medium ${isToday ? 'text-blue-900' : 'text-foreground'}`}>
                 {format(date, 'EEEE, MMMM d')}
               </h3>
-              <p className="text-sm text-gray-500">{events.length} events</p>
+              <p className="text-sm text-muted-foreground">{events.length} events</p>
             </div>
           </div>
           {isToday && (
@@ -304,7 +304,7 @@ function DroppableDay({
         )}
         
         {events.length === 0 && !isDragOver && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-muted-foreground">
             <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No events scheduled</p>
           </div>
@@ -341,17 +341,17 @@ function DroppableUnscheduledArea({
     <div
       ref={setNodeRef}
       className={`
-        h-full border-l border-gray-200 transition-colors duration-200
-        ${isDragOver ? 'bg-yellow-50 border-yellow-200' : 'bg-gray-50'}
+        h-full border-l border-border transition-colors duration-200
+        ${isDragOver ? 'bg-yellow-50 border-yellow-200' : 'bg-muted/50'}
       `}
     >
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3">
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Plus className="w-4 h-4 text-gray-400" />
+            <Plus className="w-4 h-4 text-muted-foreground" />
             <div>
-              <h3 className="font-medium text-gray-900">Unscheduled</h3>
-              <p className="text-sm text-gray-500">{events.length} ideas</p>
+              <h3 className="font-medium text-foreground">Unscheduled</h3>
+              <p className="text-sm text-muted-foreground">{events.length} ideas</p>
             </div>
           </div>
         </div>
@@ -369,7 +369,7 @@ function DroppableUnscheduledArea({
         ))}
         
         {events.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-muted-foreground">
             <Plus className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No unscheduled ideas</p>
             <p className="text-xs mt-1">Drag events here to unschedule</p>
@@ -594,7 +594,7 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
   if (!trip || !events) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading trip...</div>
+        <div className="text-muted-foreground">Loading trip...</div>
       </div>
     );
   }
@@ -607,13 +607,13 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="h-screen flex flex-col bg-gray-50">
+      <div className="h-screen flex flex-col bg-muted/50">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="bg-card border-b border-border px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-semibold text-gray-900">{trip.name}</h1>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <h1 className="text-xl font-semibold text-foreground">{trip.name}</h1>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Calendar className="w-4 h-4" />
                 <span>
                   {format(dateRange[0], 'MMM d')} - {format(dateRange[dateRange.length - 1], 'MMM d, yyyy')}
@@ -627,7 +627,7 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
                   start: new Date(prev.start.getFullYear(), prev.start.getMonth() - 1, 1),
                   end: new Date(prev.start.getFullYear(), prev.start.getMonth(), 0)
                 }))}
-                className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                className="p-2 hover:bg-secondary rounded-md transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -639,7 +639,7 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
                     end: endOfMonth(now)
                   };
                 })}
-                className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                className="px-3 py-1 text-sm bg-secondary hover:bg-secondary/80 rounded-md transition-colors"
               >
                 Today
               </button>
@@ -648,7 +648,7 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
                   start: new Date(prev.start.getFullYear(), prev.start.getMonth() + 1, 1),
                   end: new Date(prev.start.getFullYear(), prev.start.getMonth() + 2, 0)
                 }))}
-                className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                className="p-2 hover:bg-secondary rounded-md transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

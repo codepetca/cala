@@ -143,33 +143,33 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-muted/50">
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Week View */}
         <div className="flex-1 flex flex-col">
           {/* Week Header */}
-          <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="bg-card border-b border-border px-6 py-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-foreground">
                 Week of {format(weekStart, 'MMM d')} - {format(weekEnd, 'MMM d, yyyy')}
               </h2>
               <div className="flex gap-2">
                 <button
                   onClick={() => setCurrentWeek(subWeeks(currentWeek, 1))}
-                  className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                  className="p-2 hover:bg-accent rounded-md transition-colors"
                 >
                   ←
                 </button>
                 <button
                   onClick={() => setCurrentWeek(new Date())}
-                  className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                  className="px-3 py-1 text-sm bg-secondary hover:bg-gray-200 rounded-md transition-colors"
                 >
                   This Week
                 </button>
                 <button
                   onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
-                  className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                  className="p-2 hover:bg-accent rounded-md transition-colors"
                 >
                   →
                 </button>
@@ -178,15 +178,15 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
           </div>
 
           {/* Week Grid */}
-          <div className="flex-1 overflow-auto bg-white">
+          <div className="flex-1 overflow-auto bg-card">
             <div className="flex h-full min-w-[800px]">
               {/* Time column */}
-              <div className="w-16 border-r border-gray-200 bg-gray-50">
-                <div className="h-16 border-b border-gray-200"></div> {/* Header spacer */}
+              <div className="w-16 border-r border-border bg-muted/50">
+                <div className="h-16 border-b border-border"></div> {/* Header spacer */}
                 {Array.from({ length: 24 }, (_, hour) => (
                   <div 
                     key={hour} 
-                    className="h-16 border-b border-gray-200 px-2 py-1 text-xs text-gray-500 flex items-start"
+                    className="h-16 border-b border-border px-2 py-1 text-xs text-muted-foreground flex items-start"
                   >
                     {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
                   </div>
@@ -200,25 +200,25 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
                 const isToday = isSameDay(day, new Date());
 
                 return (
-                  <div key={day.toISOString()} className="flex-1 border-r border-gray-200 last:border-r-0">
+                  <div key={day.toISOString()} className="flex-1 border-r border-border last:border-r-0">
                     {/* Day header */}
-                    <div className={`h-16 border-b border-gray-200 p-2 text-center ${
+                    <div className={`h-16 border-b border-border p-2 text-center ${
                       isToday ? 'bg-blue-50' : ''
                     }`}>
                       <div className={`text-sm font-medium ${
-                        isToday ? 'text-blue-700' : 'text-gray-600'
+                        isToday ? 'text-blue-700' : 'text-muted-foreground'
                       }`}>
                         {format(day, 'EEE')}
                       </div>
                       <div className={`text-lg font-semibold ${
-                        isToday ? 'text-blue-900' : 'text-gray-900'
+                        isToday ? 'text-blue-900' : 'text-foreground'
                       }`}>
                         {format(day, 'd')}
                       </div>
                     </div>
 
                     {/* All-day events */}
-                    <div className="border-b border-gray-200 p-2 bg-gray-50 min-h-[60px]">
+                    <div className="border-b border-border p-2 bg-muted/50 min-h-[60px]">
                       {dayEvents.allDay.slice(0, 2).map((event) => (
                         <div
                           key={event._id}
@@ -229,7 +229,7 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
                         </div>
                       ))}
                       {dayEvents.allDay.length > 2 && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-muted-foreground">
                           +{dayEvents.allDay.length - 2} more
                         </div>
                       )}
@@ -296,12 +296,12 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
         </div>
 
         {/* Sidebar with unscheduled events */}
-        <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
+        <div className="w-80 bg-card border-l border-border flex flex-col">
           {/* Unscheduled Events */}
-          <div className="p-4 border-b border-gray-200">
+          <div className="p-4 border-b border-border">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="font-semibold text-gray-900">Ideas & Unscheduled</h3>
-              <span className="text-sm text-gray-500">{unscheduledEvents.length}</span>
+              <h3 className="font-semibold text-foreground">Ideas & Unscheduled</h3>
+              <span className="text-sm text-muted-foreground">{unscheduledEvents.length}</span>
             </div>
             
             <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -309,19 +309,19 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
                 <div
                   key={event._id}
                   onClick={() => setSelectedEvent(event)}
-                  className={`p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors ${
+                  className={`p-3 bg-muted/50 rounded-lg border border-border hover:bg-accent cursor-pointer transition-colors ${
                     selectedEvent?._id === event._id ? 'ring-2 ring-blue-500 ring-offset-1' : ''
                   }`}
                 >
                   <div className="font-medium text-sm truncate">{event.title}</div>
                   {event.notes && (
-                    <div className="text-xs text-gray-600 mt-1 line-clamp-2">{event.notes}</div>
+                    <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{event.notes}</div>
                   )}
                 </div>
               ))}
               
               {unscheduledEvents.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   <div className="text-4xl mb-2">💡</div>
                   <p className="text-sm">No ideas yet</p>
                   <p className="text-xs">Create events to get started</p>
@@ -333,17 +333,17 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
           {/* Event Details */}
           {selectedEvent && (
             <div className="flex-1 p-4">
-              <h3 className="font-semibold text-gray-900 mb-3">Event Details</h3>
+              <h3 className="font-semibold text-foreground mb-3">Event Details</h3>
               <div className="space-y-3">
                 <div>
-                  <div className="text-sm font-medium text-gray-900">{selectedEvent.title}</div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-sm font-medium text-foreground">{selectedEvent.title}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
                     <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
                       selectedEvent.kind === 'allDay' 
                         ? 'bg-blue-100 text-blue-800' 
                         : selectedEvent.kind === 'timed'
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
+                        : 'bg-secondary text-foreground'
                     }`}>
                       {selectedEvent.kind === 'allDay' ? 'All Day' : 
                        selectedEvent.kind === 'timed' ? 'Timed' : 'Unscheduled'}
@@ -353,12 +353,12 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
                 
                 {selectedEvent.notes && (
                   <div>
-                    <div className="text-xs font-medium text-gray-700 mb-1">Notes</div>
-                    <div className="text-sm text-gray-600">{selectedEvent.notes}</div>
+                    <div className="text-xs font-medium text-foreground mb-1">Notes</div>
+                    <div className="text-sm text-muted-foreground">{selectedEvent.notes}</div>
                   </div>
                 )}
                 
-                <div className="flex gap-2 pt-3 border-t border-gray-200">
+                <div className="flex gap-2 pt-3 border-t border-border">
                   <button
                     onClick={() => handleEditEvent(selectedEvent)}
                     className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -368,7 +368,7 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
                   {selectedEvent.kind !== 'unscheduled' && (
                     <button
                       onClick={() => handleUnscheduleEvent(selectedEvent)}
-                      className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                      className="px-3 py-2 text-sm bg-secondary text-foreground rounded-md hover:bg-gray-200 transition-colors"
                     >
                       Unschedule
                     </button>
