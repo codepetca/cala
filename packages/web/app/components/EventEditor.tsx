@@ -12,10 +12,11 @@ interface TripEvent {
   title: string;
   notes?: string;
   kind: EventKind;
-  startDate?: string;
-  endDate?: string;
-  startDateTime?: string;
-  endDateTime?: string;
+  startDate?: number;
+  endDate?: number;
+  startDateTime?: number;
+  endDateTime?: number;
+  createdAt: number;
 }
 
 interface EventEditorProps {
@@ -28,10 +29,18 @@ export default function EventEditor({ tripId, onClose, event }: EventEditorProps
   const [title, setTitle] = useState(event?.title || '');
   const [notes, setNotes] = useState(event?.notes || '');
   const [kind, setKind] = useState<EventKind>(event?.kind || 'unscheduled');
-  const [startDate, setStartDate] = useState(event?.startDate || '');
-  const [endDate, setEndDate] = useState(event?.endDate || '');
-  const [startDateTime, setStartDateTime] = useState(event?.startDateTime || '');
-  const [endDateTime, setEndDateTime] = useState(event?.endDateTime || '');
+  const [startDate, setStartDate] = useState(
+    event?.startDate ? new Date(event.startDate).toISOString().split('T')[0] : ''
+  );
+  const [endDate, setEndDate] = useState(
+    event?.endDate ? new Date(event.endDate).toISOString().split('T')[0] : ''
+  );
+  const [startDateTime, setStartDateTime] = useState(
+    event?.startDateTime ? new Date(event.startDateTime).toISOString().slice(0, 16) : ''
+  );
+  const [endDateTime, setEndDateTime] = useState(
+    event?.endDateTime ? new Date(event.endDateTime).toISOString().slice(0, 16) : ''
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const createTripEvent = useMutation(api.tripEvents.createTripEvent);
@@ -59,13 +68,13 @@ export default function EventEditor({ tripId, onClose, event }: EventEditorProps
       // Add schedule data based on kind
       if (kind === 'allDay') {
         if (startDate) {
-          eventData.startDate = startDate;
-          eventData.endDate = endDate || startDate;
+          eventData.startDate = new Date(startDate + 'T00:00:00').getTime();
+          eventData.endDate = new Date((endDate || startDate) + 'T00:00:00').getTime();
         }
       } else if (kind === 'timed') {
         if (startDateTime) {
-          eventData.startDateTime = startDateTime;
-          eventData.endDateTime = endDateTime || startDateTime;
+          eventData.startDateTime = new Date(startDateTime).getTime();
+          eventData.endDateTime = new Date(endDateTime || startDateTime).getTime();
         }
       }
 

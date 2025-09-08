@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { formatInTimeZone } from 'date-fns-tz';
 import { Id } from '../../../backend/convex/_generated/dataModel';
 import EventEditor from './EventEditor';
-import Link from 'next/link';
 
 type EventKind = 'unscheduled' | 'allDay' | 'timed';
 
@@ -15,25 +14,25 @@ interface TripEvent {
   title: string;
   notes?: string;
   kind: EventKind;
-  startDate?: string;
-  endDate?: string;
-  startDateTime?: string;
-  endDateTime?: string;
+  startDate?: number;
+  endDate?: number;
+  startDateTime?: number;
+  endDateTime?: number;
   createdAt: number;
 }
 
-interface TripViewProps {
+interface TripListViewProps {
   tripId: Id<'trips'>;
 }
 
-export default function TripView({ tripId }: TripViewProps) {
+export default function TripListView({ tripId }: TripListViewProps) {
   const [editingEvent, setEditingEvent] = useState<TripEvent | null>(null);
   const [showEventEditor, setShowEventEditor] = useState(false);
   
   const trip = useQuery(api.trips.getTripById, { tripId });
   const events = useQuery(api.tripEvents.getTripEvents, { tripId });
   const deleteTripEvent = useMutation(api.tripEvents.deleteTripEvent);
-  const updateTrip = useMutation(api.trips.updateTrip);
+  const updateTripEvent = useMutation(api.tripEvents.updateTripEvent);
 
   const handleDeleteEvent = async (eventId: Id<'tripEvents'>) => {
     if (!confirm('Are you sure you want to delete this event?')) return;
@@ -50,49 +49,47 @@ export default function TripView({ tripId }: TripViewProps) {
     setShowEventEditor(true);
   };
 
-  const handleScheduleEvent = (event: TripEvent, kind: 'allDay' | 'timed') => {
+  const handleScheduleEvent = async (event: TripEvent, kind: 'allDay' | 'timed') => {
     const now = new Date();
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     
-    const scheduledEvent = {
-      ...event,
-      kind,
-      ...(kind === 'allDay' ? {
-        startDate: tomorrow.toISOString().split('T')[0],
-        endDate: tomorrow.toISOString().split('T')[0],
-      } : {
-        startDateTime: tomorrow.toISOString().slice(0, 16),
-        endDateTime: new Date(tomorrow.getTime() + 2 * 60 * 60 * 1000).toISOString().slice(0, 16),
-      }),
-    };
-    
-    setEditingEvent(scheduledEvent);
-    setShowEventEditor(true);
-  };
-
-  const handleUnscheduleEvent = (event: TripEvent) => {
-    setEditingEvent({
-      ...event,
-      kind: 'unscheduled',
-      startDate: undefined,
-      endDate: undefined,
-      startDateTime: undefined,
-      endDateTime: undefined,
-    });
-    setShowEventEditor(true);
-  };
-
-  const togglePublic = async () => {
-    if (!trip) return;
-    
     try {
-      await updateTrip({
-        tripId: trip._id,
-        isPublic: !trip.isPublic,
+      if (kind === 'allDay') {
+        const tomorrowTimestamp = new Date(tomorrow.toISOString().split('T')[0] + 'T00:00:00').getTime();
+        await updateTripEvent({
+          eventId: event._id,
+          kind: 'allDay',
+          startDate: tomorrowTimestamp,
+          endDate: tomorrowTimestamp,
+        });
+      } else {
+        const startDateTime = tomorrow.getTime();
+        const endDateTime = tomorrow.getTime() + 2 * 60 * 60 * 1000; // +2 hours
+        await updateTripEvent({
+          eventId: event._id,
+          kind: 'timed',
+          startDateTime,
+          endDateTime,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to schedule event:', error);
+    }
+  };
+
+  const handleUnscheduleEvent = async (event: TripEvent) => {
+    try {
+      await updateTripEvent({
+        eventId: event._id,
+        kind: 'unscheduled',
+        startDate: undefined,
+        endDate: undefined,
+        startDateTime: undefined,
+        endDateTime: undefined,
       });
     } catch (error) {
-      console.error('Failed to update trip:', error);
+      console.error('Failed to unschedule event:', error);
     }
   };
 
@@ -110,14 +107,16 @@ export default function TripView({ tripId }: TripViewProps) {
 
   const formatEventTime = (event: TripEvent) => {
     if (event.kind === 'allDay') {
+      if (!event.startDate) return '';
       if (event.startDate === event.endDate || !event.endDate) {
-        return formatInTimeZone(new Date(event.startDate!), 'UTC', 'MMM d, yyyy');
+        return formatInTimeZone(new Date(event.startDate), 'UTC', 'MMM d, yyyy');
       }
-      return `${formatInTimeZone(new Date(event.startDate!), 'UTC', 'MMM d, yyyy')} - ${formatInTimeZone(new Date(event.endDate!), 'UTC', 'MMM d, yyyy')}`;
+      return `${formatInTimeZone(new Date(event.startDate), 'UTC', 'MMM d, yyyy')} - ${formatInTimeZone(new Date(event.endDate), 'UTC', 'MMM d, yyyy')}`;
     }
     if (event.kind === 'timed') {
-      const start = new Date(event.startDateTime!);
-      const end = new Date(event.endDateTime!);
+      if (!event.startDateTime || !event.endDateTime) return '';
+      const start = new Date(event.startDateTime);
+      const end = new Date(event.endDateTime);
       if (start.toDateString() === end.toDateString()) {
         return `${formatInTimeZone(start, 'UTC', 'MMM d, yyyy HH:mm')} - ${formatInTimeZone(end, 'UTC', 'HH:mm')}`;
       }
@@ -127,67 +126,17 @@ export default function TripView({ tripId }: TripViewProps) {
   };
 
   const getEventSortKey = (event: TripEvent): number => {
-    if (event.kind === 'allDay') {
-      return new Date(event.startDate!).getTime();
+    if (event.kind === 'allDay' && event.startDate) {
+      return event.startDate;
     }
-    if (event.kind === 'timed') {
-      return new Date(event.startDateTime!).getTime();
+    if (event.kind === 'timed' && event.startDateTime) {
+      return event.startDateTime;
     }
     return event.createdAt;
   };
 
   return (
-    <div>
-      <div className="mb-8">
-        <Link 
-          href="/"
-          className="text-blue-600 hover:text-blue-800 text-sm mb-4 inline-block"
-        >
-          ← Back to workspaces
-        </Link>
-        
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{trip.name}</h1>
-            {trip.description && (
-              <p className="text-gray-600 mt-2">{trip.description}</p>
-            )}
-            <div className="flex items-center gap-4 mt-2">
-              <span className="text-sm text-gray-600">
-                {events.length} events total
-              </span>
-              {trip.isPublic && (
-                <Link
-                  href={`/share/${trip.shareSlug}`}
-                  className="text-xs text-blue-600 hover:text-blue-800"
-                  target="_blank"
-                >
-                  View public link →
-                </Link>
-              )}
-            </div>
-          </div>
-          
-          <div className="flex gap-2">
-            <button
-              onClick={togglePublic}
-              className={`btn text-sm ${
-                trip.isPublic ? 'btn-secondary' : 'btn-primary'
-              }`}
-            >
-              {trip.isPublic ? 'Make Private' : 'Make Public'}
-            </button>
-            
-            <button
-              onClick={() => setShowEventEditor(true)}
-              className="btn btn-primary"
-            >
-              Add Event
-            </button>
-          </div>
-        </div>
-      </div>
-
+    <div className="max-w-6xl mx-auto p-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <section>
           <div className="flex justify-between items-center mb-4">

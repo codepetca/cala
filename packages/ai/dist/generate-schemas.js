@@ -93,7 +93,6 @@ function generateSchemas() {
                     name,
                     description,
                     version: VERSION,
-                    generatedAt: new Date().toISOString(),
                     sourceSchema: `@trip-planner/domain/schemas/${name}`,
                 },
                 schema: jsonSchema,
@@ -116,7 +115,6 @@ function generateSchemas() {
         metadata: {
             description: 'AI-consumable JSON schemas generated from Zod domain model',
             version: VERSION,
-            generatedAt: new Date().toISOString(),
             totalSchemas: successCount,
         },
         schemas: Object.keys(generatedSchemas),
