@@ -3,7 +3,6 @@
     "name": "WorkspaceMembership",
     "description": "User membership in a workspace",
     "version": "1.0.0",
-    "generatedAt": "2025-09-07T18:07:26.587Z",
     "sourceSchema": "@trip-planner/domain/schemas/WorkspaceMembership"
   },
   "schema": {

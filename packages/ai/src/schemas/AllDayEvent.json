@@ -3,7 +3,6 @@
     "name": "AllDayEvent",
     "description": "Event scheduled for full day(s)",
     "version": "1.0.0",
-    "generatedAt": "2025-09-07T18:07:26.586Z",
     "sourceSchema": "@trip-planner/domain/schemas/AllDayEvent"
   },
   "schema": {

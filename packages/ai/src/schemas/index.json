@@ -2,7 +2,6 @@
   "metadata": {
     "description": "AI-consumable JSON schemas generated from Zod domain model",
     "version": "1.0.0",
-    "generatedAt": "2025-09-07T18:07:26.587Z",
     "totalSchemas": 10
   },
   "schemas": [
