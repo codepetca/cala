@@ -45,23 +45,23 @@ declare const AllDayEventSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 }, {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 }>;
 declare const TimedEventSchema: z.ZodObject<{
     id: z.ZodString;
@@ -134,23 +134,23 @@ export declare const TripEventSchema: z.ZodDiscriminatedUnion<"kind", [z.ZodObje
 }, "strip", z.ZodTypeAny, {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 }, {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 }>, z.ZodObject<{
     id: z.ZodString;
     tripId: z.ZodString;
@@ -228,23 +228,23 @@ export declare const TripEventRefinedSchema: z.ZodEffects<z.ZodEffects<z.ZodDisc
 }, "strip", z.ZodTypeAny, {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 }, {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 }>, z.ZodObject<{
     id: z.ZodString;
     tripId: z.ZodString;
@@ -287,13 +287,13 @@ export declare const TripEventRefinedSchema: z.ZodEffects<z.ZodEffects<z.ZodDisc
 } | {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 } | {
     id: string;
     createdAt: Date;
@@ -315,13 +315,13 @@ export declare const TripEventRefinedSchema: z.ZodEffects<z.ZodEffects<z.ZodDisc
 } | {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 } | {
     id: string;
     createdAt: Date;
@@ -343,13 +343,13 @@ export declare const TripEventRefinedSchema: z.ZodEffects<z.ZodEffects<z.ZodDisc
 } | {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 } | {
     id: string;
     createdAt: Date;
@@ -371,13 +371,13 @@ export declare const TripEventRefinedSchema: z.ZodEffects<z.ZodEffects<z.ZodDisc
 } | {
     id: string;
     createdAt: Date;
+    startDate: Date;
     updatedAt: Date;
     tripId: string;
     title: string;
     kind: "allDay";
-    startDate: Date;
-    notes?: string | undefined;
     endDate?: Date | undefined;
+    notes?: string | undefined;
 } | {
     id: string;
     createdAt: Date;

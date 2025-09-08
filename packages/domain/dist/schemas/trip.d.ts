@@ -7,6 +7,8 @@ export declare const TripSchema: z.ZodObject<{
     workspaceId: z.ZodString;
     name: z.ZodString;
     description: z.ZodOptional<z.ZodString>;
+    startDate: z.ZodOptional<z.ZodDate>;
+    endDate: z.ZodOptional<z.ZodDate>;
     timezone: z.ZodDefault<z.ZodString>;
     isPublic: z.ZodDefault<z.ZodBoolean>;
     shareSlug: z.ZodString;
@@ -22,6 +24,8 @@ export declare const TripSchema: z.ZodObject<{
     shareSlug: string;
     updatedAt: Date;
     description?: string | undefined;
+    startDate?: Date | undefined;
+    endDate?: Date | undefined;
 }, {
     id: string;
     name: string;
@@ -30,6 +34,8 @@ export declare const TripSchema: z.ZodObject<{
     shareSlug: string;
     updatedAt: Date;
     description?: string | undefined;
+    startDate?: Date | undefined;
+    endDate?: Date | undefined;
     timezone?: string | undefined;
     isPublic?: boolean | undefined;
 }>;

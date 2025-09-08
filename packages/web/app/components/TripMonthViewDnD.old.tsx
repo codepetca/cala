@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../../backend/convex/_generated/api';
-import { useState, useMemo, useRef, useLayoutEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, format, startOfWeek, endOfWeek } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { Id } from '../../../backend/convex/_generated/dataModel';
@@ -137,30 +137,26 @@ interface DroppableDayProps {
   date: Date;
   events: TripEvent[];
   onEdit: (event: TripEvent) => void;
-  onDelete: (event: TripEvent) => void;
+  onDelete: (eventId: Id<'tripEvents'>) => void;
   onUnschedule: (event: TripEvent) => void;
   onClick: (event: TripEvent) => void;
-  onCreateEvent: (dateStr: string) => void;
+  onCreateEvent: (date: string) => void;
   selectedEvent: TripEvent | null;
   isDragOver: boolean;
   insertIndex?: number;
-  draggedHeight: number;
-  eventRefs: React.MutableRefObject<Map<string, HTMLElement>>;
 }
 
-function DroppableDay({ 
-  date, 
-  events, 
-  onEdit: _onEdit, 
-  onDelete: _onDelete, 
-  onUnschedule: _onUnschedule, 
-  onClick, 
-  onCreateEvent: _onCreateEvent, 
-  selectedEvent, 
-  isDragOver, 
-  insertIndex, 
-  draggedHeight, 
-  eventRefs,
+function DroppableDay({
+  date,
+  events,
+  onEdit: _onEdit,
+  onDelete: _onDelete,
+  onUnschedule: _onUnschedule,
+  onClick,
+  onCreateEvent: _onCreateEvent,
+  selectedEvent,
+  isDragOver,
+  insertIndex,
 }: DroppableDayProps) {
   const isCurrentMonth = isSameMonth(date, new Date());
   const isToday = isSameDay(date, new Date());
@@ -211,7 +207,7 @@ function DroppableDay({
           <div className="h-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full my-1 animate-pulse shadow-lg opacity-90" />
         )}
         
-        {events.map((event, index) => {
+        {events.slice(0, 3).map((event, index) => {
           // Smart displacement: events at insertIndex and below should move down
           const shouldDisplace = isDragOver && insertIndex !== undefined && index >= insertIndex;
           const displacementClass = shouldDisplace ? 'transform translate-y-6 transition-transform duration-200' : '';
@@ -318,24 +314,6 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
   const [showEventEditor, setShowEventEditor] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<TripEvent | null>(null);
-  const eventRefs = useRef<Map<string, HTMLElement>>(new Map());
-  const [eventHeights, setEventHeights] = useState<Record<string, number>>({});
-  const [draggedHeight, setDraggedHeight] = useState<number>(0);
-  useLayoutEffect(() => {
-    if (typeof ResizeObserver === 'undefined') return;
-    const resizeObs = new ResizeObserver((entries) => {
-      setEventHeights((prev) => {
-        const next = { ...prev } as Record<string, number>;
-        for (const e of entries) {
-          const id = (e.target as HTMLElement).dataset.eventId as string | undefined;
-          if (id) next[id] = e.contentRect.height;
-        }
-        return next;
-      });
-    });
-    for (const el of eventRefs.current.values()) resizeObs.observe(el);
-    return () => resizeObs.disconnect();
-  }, [selectedEvent]);
   
   // @dnd-kit state
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -418,74 +396,56 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
   };
 
   const handleDragOver = (event: DragOverEvent) => {
-  const { active, over } = event;
-
-  if (!over) {
-    setDragOverDate(null);
-    setInsertIndex(undefined);
-    return;
-  }
-
-  // Unscheduled area
-  if (over.id === 'unscheduled-area') {
-    setDragOverDate('unscheduled');
-    setInsertIndex(undefined);
-    return;
-  }
-
-  // Hovering a day cell
-  if (over.data.current?.type === 'date') {
-    const targetDate = over.data.current.date as string;
-    setDragOverDate(targetDate);
-
-    const dayEvents = getEventsForDate(new Date(targetDate + 'T00:00:00'));
-
-    // Determine index by comparing pointer to item midpoints
-    const overRect = over.rect;
-    const pointerClientY = (event as any).activatorEvent?.clientY ?? overRect.top + overRect.height / 2;
-
-    // Build thresholds
-    let running = overRect.top;
-    let idx = 0;
-    for (let i = 0; i < dayEvents.length; i++) {
-      const id = dayEvents[i]._id as string;
-      const h = eventHeights[id] ?? (eventRefs.current.get(id)?.offsetHeight ?? 32);
-      const midpoint = running + h / 2;
-      if (pointerClientY < midpoint) { idx = i; break; }
-      running += h;
-      idx = i + 1;
+    const { active, over } = event;
+    
+    if (!over) {
+      setDragOverDate(null);
+      setInsertIndex(undefined);
+      return;
     }
 
-    setInsertIndex(idx);
-    const dh = eventHeights[(active.id as string)] ?? (eventRefs.current.get(active.id as string)?.offsetHeight ?? 32);
-    setDraggedHeight(dh);
-    return;
-  }
+    // Check if dropping on unscheduled area
+    if (over.id === 'unscheduled-area') {
+      setDragOverDate('unscheduled');
+      setInsertIndex(undefined);
+      return;
+    }
 
-  // Hovering another event card
-  if (over.data.current?.type === 'event') {
-    const targetEvent = over.data.current?.event as TripEvent;
-    if (targetEvent && targetEvent.kind !== 'unscheduled') {
-      const targetDate =
-        targetEvent.kind === 'allDay'
-          ? new Date(targetEvent.startDate!).toISOString().split('T')[0]
-          : new Date(targetEvent.startDateTime!).toISOString().split('T')[0];
-
+    // Check if dropping on calendar date
+    if (over.data.current?.type === 'date') {
+      const targetDate = over.data.current.date;
       setDragOverDate(targetDate);
-
-      const rect = over.rect;
-      const pointerClientY = (event as any).activatorEvent?.clientY ?? rect.top + rect.height / 2;
-      const after = pointerClientY > rect.top + rect.height / 2;
-
+      
+      // Calculate insertion index for visual feedback
       const dayEvents = getEventsForDate(new Date(targetDate + 'T00:00:00'));
-      const targetIdx = dayEvents.findIndex(e => e._id === targetEvent._id);
-      setInsertIndex(Math.max(0, targetIdx + (after ? 1 : 0)));
-
-      const dh = eventHeights[(active.id as string)] ?? (eventRefs.current.get(active.id as string)?.offsetHeight ?? 32);
-      setDraggedHeight(dh);
+      setInsertIndex(dayEvents.length); // Default to end
+      return;
     }
-  }
-};
+
+    // If dropping on another event, don't show drop zone
+    if (over.data.current?.type === 'event') {
+      const targetEvent = over.data.current?.event as TripEvent;
+      
+      // Find which date this target event belongs to
+      if (targetEvent && targetEvent.kind !== 'unscheduled') {
+        let targetDate: string;
+        if (targetEvent.kind === 'allDay' && targetEvent.startDate) {
+          targetDate = new Date(targetEvent.startDate).toISOString().split('T')[0];
+        } else if (targetEvent.kind === 'timed' && targetEvent.startDateTime) {
+          targetDate = new Date(targetEvent.startDateTime).toISOString().split('T')[0];
+        } else {
+          return;
+        }
+        
+        setDragOverDate(targetDate);
+        
+        // Find insertion index relative to target event
+        const dayEvents = getEventsForDate(new Date(targetDate + 'T00:00:00'));
+        const targetIndex = dayEvents.findIndex(e => e._id === targetEvent._id);
+        setInsertIndex(Math.max(0, targetIndex));
+      }
+    }
+  };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -723,8 +683,6 @@ export default function TripMonthView({ tripId }: TripMonthViewProps) {
                         selectedEvent={selectedEvent}
                         isDragOver={isDragOver}
                         insertIndex={insertIndex}
-                        draggedHeight={draggedHeight}
-                        eventRefs={eventRefs}
                       />
                     );
                   })}

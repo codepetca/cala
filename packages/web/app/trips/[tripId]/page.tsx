@@ -1,7 +1,7 @@
 'use client';
 
 import TripMonthView from '../../components/TripMonthViewDnD';
-import TripListView from '../../components/TripListView';
+import TripListView from '../../components/TripListViewDnD';
 import TripWeekView from '../../components/TripWeekView';
 import EventEditor from '../../components/EventEditor';
 import { Id } from '../../../../backend/convex/_generated/dataModel';

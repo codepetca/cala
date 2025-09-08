@@ -16,6 +16,12 @@ exports.TripSchema = zod_1.z.object({
         .max(1000, 'Description must be 1000 characters or less')
         .optional()
         .describe('Optional trip description'),
+    startDate: zod_1.z.date()
+        .optional()
+        .describe('Trip start date for planning views'),
+    endDate: zod_1.z.date()
+        .optional()
+        .describe('Trip end date for planning views'),
     timezone: zod_1.z.string()
         .default('UTC')
         .describe('Trip timezone (IANA timezone identifier)'),

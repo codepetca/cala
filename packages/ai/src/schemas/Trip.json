@@ -30,6 +30,16 @@
             "maxLength": 1000,
             "description": "Optional trip description"
           },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Trip start date for planning views"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Trip end date for planning views"
+          },
           "timezone": {
             "type": "string",
             "default": "UTC",

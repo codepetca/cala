@@ -15,6 +15,12 @@ export const TripSchema = z.object({
     .max(1000, 'Description must be 1000 characters or less')
     .optional()
     .describe('Optional trip description'),
+  startDate: z.date()
+    .optional()
+    .describe('Trip start date for planning views'),
+  endDate: z.date()
+    .optional()
+    .describe('Trip end date for planning views'),
   timezone: z.string()
     .default('UTC')
     .describe('Trip timezone (IANA timezone identifier)'),
