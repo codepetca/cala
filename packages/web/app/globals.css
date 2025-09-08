@@ -2,41 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-gray-50 text-gray-900;
-}
-
 .btn {
   @apply px-4 py-2 rounded-md font-medium border transition-colors;
 }
 
 .btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 border-blue-600;
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 border-primary;
 }
 
 .btn-secondary {
-  @apply bg-white border-gray-300 hover:bg-gray-50 text-gray-700;
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 border-border;
 }
 
 .btn-danger {
-  @apply bg-red-600 text-white hover:bg-red-700 border-red-600;
+  @apply bg-destructive text-destructive-foreground hover:bg-destructive/90 border-destructive;
 }
 
 .card {
-  @apply bg-white border border-gray-200 rounded-lg shadow-sm;
+  @apply bg-card text-card-foreground border border-border rounded-lg shadow-sm;
 }
 
 .form-input {
-  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500;
+  @apply block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-input;
 }
 
 .form-textarea {
-  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500;
+  @apply block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-input;
   resize: vertical;
 }
 
 .form-label {
-  @apply block text-sm font-medium text-gray-700 mb-1;
+  @apply block text-sm font-medium text-foreground mb-1;
 }
 
 /* Drag and drop utilities */
@@ -45,7 +41,7 @@ body {
 }
 
 .drag-over {
-  @apply bg-blue-50 border-blue-300;
+  @apply bg-accent border-accent-foreground;
 }
 
 /* Line clamping utilities */
@@ -72,11 +68,11 @@ body {
 
 /* Calendar grid utilities */
 .calendar-day {
-  @apply min-h-[120px] border-r border-b border-gray-200 last:border-r-0 p-2;
+  @apply min-h-[120px] border-r border-b border-border last:border-r-0 p-2;
 }
 
 .calendar-day:hover {
-  @apply bg-gray-50;
+  @apply bg-accent;
 }
 
 /* Event card animations */

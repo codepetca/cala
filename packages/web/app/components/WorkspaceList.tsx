@@ -14,7 +14,7 @@ export default function WorkspaceList() {
   if (!user) {
     return (
       <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
+        <h3 className="text-lg font-medium text-foreground mb-4">
           Sign in to access your workspaces
         </h3>
         <AuthButton />
@@ -29,10 +29,10 @@ export default function WorkspaceList() {
   if (workspaces.length === 0) {
     return (
       <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
+        <h3 className="text-lg font-medium text-foreground mb-4">
           No workspaces found
         </h3>
-        <p className="text-gray-600 mb-6">
+        <p className="text-muted-foreground mb-6">
           A workspace was automatically created for you when you signed up.
         </p>
       </div>
@@ -52,13 +52,13 @@ export default function WorkspaceList() {
             href={`/workspace/${workspace._id}`}
             className="card p-6 hover:shadow-md transition-shadow"
           >
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-foreground mb-2">
               {workspace.name}
             </h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Role: {workspace.role}
             </p>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               Created {new Date(workspace.createdAt).toLocaleDateString()}
             </div>
           </Link>
