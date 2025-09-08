@@ -16,7 +16,7 @@ A real-time collaborative trip planning app built with Next.js App Router, Conve
 
 - **Frontend**: Next.js 14 with App Router, React 18, TypeScript
 - **Backend**: Convex for database, auth, and real-time sync
-- **Styling**: Tailwind CSS with custom components
+- **Styling**: Tailwind CSS + shadcn/ui + Radix UI primitives
 - **Validation**: Zod for input validation
 - **Testing**: Vitest, React Testing Library, Playwright
 - **Deployment**: Vercel (frontend) + Convex (backend)
@@ -90,6 +90,67 @@ The app uses Convex with these main tables:
 - **UTC storage** with local timezone display
 - **Optimistic updates** via Convex reactivity
 - **Role-based permissions** enforced server-side
+
+## Frontend Conventions
+
+### Component Structure
+
+```
+@/components/ui/*        # shadcn/ui primitives (Button, Card, Dialog)
+@/components/app/*       # App-specific components (AppShell, ThemeToggle)
+@/lib/utils.ts           # Utilities including cn() for class merging
+```
+
+### Import Patterns
+
+```typescript
+// ✅ Named icon imports (tree-shakable)
+import { Plus, Calendar, Settings } from 'lucide-react'
+
+// ✅ shadcn/ui components
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+
+// ✅ Convex hooks in client components only
+'use client'
+import { useQuery, useMutation } from 'convex/react'
+```
+
+### Styling Guidelines
+
+- **Tailwind First**: Use utility classes over custom CSS
+- **Design System**: Use theme colors (`primary`, `secondary`, `muted`)
+- **Responsive**: Mobile-first with `sm:`, `md:`, `lg:` breakpoints
+- **Dark Mode**: All components support light/dark themes
+- **Spacing**: 4px grid system with consistent space utilities
+
+### Accessibility Rules
+
+- **Keyboard Navigation**: All interactive elements accessible via keyboard
+- **Screen Readers**: Proper ARIA labels and semantic HTML
+- **Focus Management**: Clear focus indicators and logical tab order
+- **Portal Z-Index**: Use `z-50+` for modals, dropdowns, tooltips
+
+### Component Examples
+
+```typescript
+// App Shell Usage
+<AppShell>
+  <YourPageContent />
+</AppShell>
+
+// Theme Toggle
+<ThemeToggle />
+
+// Modal with proper z-index
+<Dialog>
+  <DialogContent className="z-50">
+    <DialogHeader>
+      <DialogTitle>Modal Title</DialogTitle>
+    </DialogHeader>
+  </DialogContent>
+</Dialog>
+```
 
 ## Testing
 

@@ -1,6 +1,6 @@
 import './globals.css';
 import Providers from './providers';
-import ConditionalHeader from './components/ConditionalHeader';
+import { AppShell } from '@/components/app/AppShell';
 
 export const metadata = {
   title: 'Trip Planner',
@@ -13,13 +13,12 @@ export default function RootLayout({
   children: React.ReactNode 
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>
-          <ConditionalHeader />
-          <main>
+          <AppShell>
             {children}
-          </main>
+          </AppShell>
         </Providers>
       </body>
     </html>

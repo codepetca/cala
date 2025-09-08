@@ -94,3 +94,36 @@ Private Plan → Make Public → Public Plan (with share link)
 - Workspace membership is required for all write operations
 - Input validation at all API boundaries with Zod schemas
 - No client-side auth state (rely on server-side identity)
+
+## UI System Architecture
+
+### Component Organization
+- `@/components/ui/*` - shadcn/ui primitive components (Button, Card, Dialog, etc.)
+- `@/components/app/*` - Application-specific components (AppShell, ThemeToggle, NavItems)
+- `@/lib/utils.ts` - Utility functions including `cn()` for class merging
+
+### UI Stack
+- **TailwindCSS**: Utility-first CSS framework for styling
+- **shadcn/ui**: Copy-pasteable components built on Radix primitives
+- **Radix UI**: Accessible, unstyled UI components
+- **Lucide React**: Tree-shakable icon library
+- **next-themes**: Dark/light theme management
+
+### Development Rules
+1. **Client Components Only**: Convex hooks (useQuery, useMutation) must be in components marked with `'use client'`
+2. **Named Imports**: Always import Lucide icons by name (e.g., `import { Plus, Settings } from 'lucide-react'`)
+3. **Accessibility First**: Use Radix primitives to ensure keyboard navigation and ARIA support
+4. **Portal Z-Index**: Set `z-50` or higher on Dialog/Dropdown/Popover components for proper layering
+5. **Theme Support**: All components should work in both light and dark modes
+
+### Component Patterns
+- Use `cn()` utility to merge Tailwind classes conditionally
+- Implement loading states and error boundaries for Convex data
+- Follow compound component patterns for complex UI elements
+- Maintain consistent spacing with Tailwind space utilities
+
+### Styling Guidelines
+- Prefer Tailwind utilities over custom CSS
+- Use design system colors (primary, secondary, muted, etc.) from theme
+- Implement responsive design with mobile-first approach
+- Maintain 4px grid system for consistent spacing
