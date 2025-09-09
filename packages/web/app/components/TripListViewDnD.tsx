@@ -12,7 +12,6 @@ import {
   Edit, 
   Trash2, 
   Plus, 
-  GripVertical,
   ChevronLeft,
   ChevronRight,
   CalendarX
@@ -129,9 +128,10 @@ function DraggableListItem({
       ref={setNodeRef}
       style={style}
       {...attributes}
+      {...listeners}
       onClick={() => onClick(event)}
       className={`
-        group p-3 border rounded-lg cursor-pointer transition-all duration-200
+        group p-3 border rounded-lg cursor-grab active:cursor-grabbing transition-all duration-200
         hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
         ${getEventColor(event.kind)}
         ${isDragging ? 'opacity-30' : 'hover:shadow-md'}
@@ -143,12 +143,6 @@ function DraggableListItem({
           <div className="flex items-center space-x-2 mb-1">
             {getEventIcon(event.kind)}
             <h3 className="font-medium truncate">{event.title}</h3>
-            <div
-              {...listeners}
-              className="opacity-0 group-hover:opacity-100 p-1 cursor-grab active:cursor-grabbing"
-            >
-              <GripVertical className="w-4 h-4 text-muted-foreground" />
-            </div>
           </div>
           
           {event.notes && (
@@ -162,12 +156,13 @@ function DraggableListItem({
           )}
         </div>
         
-        <div className="flex items-center space-x-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center space-x-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onEdit(event);
             }}
+            onPointerDown={(e) => e.stopPropagation()}
             className="p-1 text-muted-foreground hover:text-blue-600 rounded"
             title="Edit"
           >
@@ -180,6 +175,7 @@ function DraggableListItem({
                 e.stopPropagation();
                 onUnschedule(event);
               }}
+              onPointerDown={(e) => e.stopPropagation()}
               className="p-1 text-muted-foreground hover:text-yellow-600 rounded"
               title="Unschedule"
             >
@@ -192,6 +188,7 @@ function DraggableListItem({
               e.stopPropagation();
               onDelete(event);
             }}
+            onPointerDown={(e) => e.stopPropagation()}
             className="p-1 text-muted-foreground hover:text-red-600 rounded"
             title="Delete"
           >
@@ -213,7 +210,6 @@ interface DroppableDayProps {
   onClick: (event: TripEvent) => void;
   selectedEvent: TripEvent | null;
   isDragOver: boolean;
-  insertIndex?: number;
 }
 
 function DroppableDay({ 
@@ -224,8 +220,7 @@ function DroppableDay({
   onUnschedule, 
   onClick, 
   selectedEvent, 
-  isDragOver, 
-  insertIndex 
+  isDragOver 
 }: DroppableDayProps) {
   const dateStr = format(date, 'yyyy-MM-dd');
   const isToday = format(new Date(), 'yyyy-MM-dd') === dateStr;
@@ -247,68 +242,24 @@ function DroppableDay({
       `}
     >
       {/* Day Header */}
-      <div className={`
-        sticky top-0 z-10 bg-card px-4 py-3 border-b border-border
-        ${isToday ? 'bg-blue-50 border-blue-200' : ''}
-      `}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Calendar className="w-4 h-4 text-muted-foreground" />
-            <div>
-              <h3 className={`font-medium ${isToday ? 'text-blue-900' : 'text-foreground'}`}>
-                {format(date, 'EEEE, MMMM d')}
-              </h3>
-              <p className="text-sm text-muted-foreground">{events.length} events</p>
-            </div>
-          </div>
-          {isToday && (
-            <div className="w-2 h-2 bg-blue-500 rounded-full" />
-          )}
-        </div>
+      <div className="sticky top-0 z-10 bg-muted/50 px-4 py-2 border-b border-border">
+        <h3 className="font-medium text-foreground">
+          {format(date, 'EEE MMM d')}
+        </h3>
       </div>
 
       {/* Events List */}
-      <div className="p-4 space-y-2 min-h-[120px]">
-        {/* Show insertion indicator at top if index is 0 */}
-        {isDragOver && insertIndex === 0 && (
-          <div className="h-0.5 bg-blue-400 rounded-full animate-pulse shadow-sm" />
-        )}
-        
-        {events.map((event, index) => {
-          // Smart displacement: events at insertIndex and below should move down
-          const shouldDisplace = isDragOver && insertIndex !== undefined && index >= insertIndex;
-          const displacementClass = shouldDisplace ? 'transform translate-y-12 transition-transform duration-200' : '';
-          
-          return (
-            <div key={event._id} className="relative">
-              <DraggableListItem
-                event={event}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onUnschedule={onUnschedule}
-                onClick={onClick}
-                className={displacementClass}
-              />
-              
-              {/* Show insertion indicator between events */}
-              {isDragOver && insertIndex === index + 1 && (
-                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-400 rounded-full animate-pulse shadow-sm z-10" />
-              )}
-            </div>
-          );
-        })}
-        
-        {/* Handle case where we want to insert at the end */}
-        {isDragOver && insertIndex === events.length && (
-          <div className="h-0.5 bg-blue-400 rounded-full animate-pulse shadow-sm" />
-        )}
-        
-        {events.length === 0 && !isDragOver && (
-          <div className="text-center py-8 text-muted-foreground">
-            <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No events scheduled</p>
-          </div>
-        )}
+      <div className="p-4 space-y-2 bg-muted/50">
+        {events.map((event) => (
+          <DraggableListItem
+            key={event._id}
+            event={event}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onUnschedule={onUnschedule}
+            onClick={onClick}
+          />
+        ))}
       </div>
     </div>
   );
@@ -395,7 +346,6 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
   // @dnd-kit state
   const [activeId, setActiveId] = useState<string | null>(null);
   const [dragOverDate, setDragOverDate] = useState<string | null>(null);
-  const [insertIndex, setInsertIndex] = useState<number | undefined>(undefined);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -452,14 +402,12 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
 
     if (!over) {
       setDragOverDate(null);
-      setInsertIndex(undefined);
       return;
     }
 
     // Check if dropping on unscheduled area
     if (over.id === 'unscheduled-area') {
       setDragOverDate('unscheduled');
-      setInsertIndex(undefined);
       return;
     }
 
@@ -467,10 +415,6 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
     if (over.data.current?.type === 'date') {
       const targetDate = over.data.current.date;
       setDragOverDate(targetDate);
-      
-      // Calculate insertion index for visual feedback
-      const dayEvents = getEventsForDate(targetDate);
-      setInsertIndex(dayEvents.length); // Default to end
       return;
     }
   };
@@ -479,7 +423,6 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
     const { active, over } = event;
     setActiveId(null);
     setDragOverDate(null);
-    setInsertIndex(undefined);
 
     if (!over || !events) return;
 
@@ -659,11 +602,16 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
         {/* Main Content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Scheduled Events (Left Column) */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-[60] overflow-y-auto">
             {dateRange.map((day) => {
               const dayEvents = getEventsForDate(format(day, 'yyyy-MM-dd'));
               const dateStr = format(day, 'yyyy-MM-dd');
               const isDragOver = dragOverDate === dateStr;
+
+              // Only render days that have events or are being dragged over
+              if (dayEvents.length === 0 && !isDragOver) {
+                return null;
+              }
 
               return (
                 <DroppableDay
@@ -676,14 +624,13 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
                   onClick={setSelectedEvent}
                   selectedEvent={selectedEvent}
                   isDragOver={isDragOver}
-                  insertIndex={insertIndex}
                 />
               );
             })}
           </div>
 
           {/* Unscheduled Events (Right Column) */}
-          <div className="w-80">
+          <div className="flex-[40]">
             <DroppableUnscheduledArea
               events={unscheduledEvents}
               onEdit={handleEditEvent}
