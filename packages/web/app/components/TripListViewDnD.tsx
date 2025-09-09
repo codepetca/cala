@@ -112,7 +112,7 @@ function DraggableListItem({
         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1
         touch-none select-none
         ${getEventColor(event.kind)}
-        ${isDragging ? 'opacity-40 scale-105 rotate-1 translate-x-2 shadow-xl z-50' : 'hover:shadow-md'}
+        ${isDragging ? 'opacity-0' : 'hover:shadow-md'}
         ${className}
       `}
     >
