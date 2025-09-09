@@ -5,6 +5,10 @@ import { AppShell } from '@/components/app/AppShell';
 export const metadata = {
   title: 'Trip Planner',
   description: 'Plan trips collaboratively in real time.',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' }
+  ],
 };
 
 export default function RootLayout({ 

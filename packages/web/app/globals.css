@@ -84,6 +84,28 @@
   @apply shadow-md transform scale-[1.02];
 }
 
+/* Image/illustration theming patterns */
+.theme-image-light {
+  @apply block dark:hidden;
+}
+
+.theme-image-dark {
+  @apply hidden dark:block;
+}
+
+/* Logo/branding theming */
+.theme-logo {
+  @apply transition-opacity duration-200;
+}
+
+.theme-logo-light {
+  @apply block dark:hidden;
+}
+
+.theme-logo-dark {
+  @apply hidden dark:block;
+}
+
 
 
 @layer base {

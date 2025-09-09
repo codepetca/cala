@@ -54,33 +54,33 @@ export default function TripPage({
   const ViewComponent = view === 'month' ? TripMonthView : view === 'week' ? TripWeekView : TripListView;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-card border-b border-border px-6 py-4">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-4">
             <Link 
               href="/"
-              className="text-blue-600 hover:text-blue-800 text-sm"
+              className="text-primary hover:text-primary/80 text-sm"
             >
               ← Back to workspaces
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{trip.name}</h1>
+              <h1 className="text-2xl font-bold text-foreground">{trip.name}</h1>
               {trip.description && (
-                <p className="text-gray-600 text-sm mt-1">{trip.description}</p>
+                <p className="text-muted-foreground text-sm mt-1">{trip.description}</p>
               )}
             </div>
           </div>
           
           <div className="flex items-center gap-3">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               {events.length} events
             </div>
             {trip.isPublic && (
               <Link
                 href={`/share/${trip.shareSlug}`}
-                className="text-sm text-blue-600 hover:text-blue-800"
+                className="text-sm text-primary hover:text-primary/80"
                 target="_blank"
               >
                 View public link →
@@ -90,15 +90,15 @@ export default function TripPage({
               onClick={togglePublic}
               className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
                 trip.isPublic 
-                  ? 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200' 
-                  : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                  ? 'bg-secondary text-secondary-foreground border-border hover:bg-secondary/80' 
+                  : 'bg-primary text-primary-foreground border-primary hover:bg-primary/90'
               }`}
             >
               {trip.isPublic ? 'Make Private' : 'Make Public'}
             </button>
             <button
               onClick={() => setShowEventEditor(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="btn btn-primary"
             >
               Add Event
             </button>
@@ -107,13 +107,13 @@ export default function TripPage({
 
         {/* View Toggle */}
         <div className="mt-4">
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit">
+          <div className="flex gap-1 bg-muted rounded-lg p-1 w-fit">
             <button
               onClick={() => handleViewChange('month')}
               className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                 view === 'month'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               Month
@@ -122,8 +122,8 @@ export default function TripPage({
               onClick={() => handleViewChange('list')}
               className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                 view === 'list'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               List
@@ -132,8 +132,8 @@ export default function TripPage({
               onClick={() => handleViewChange('week')}
               className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                 view === 'week'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               Week

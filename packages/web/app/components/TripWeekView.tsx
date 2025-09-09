@@ -163,7 +163,7 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
                 </button>
                 <button
                   onClick={() => setCurrentWeek(new Date())}
-                  className="px-3 py-1 text-sm bg-secondary hover:bg-gray-200 rounded-md transition-colors"
+                  className="px-3 py-1 text-sm bg-secondary hover:bg-secondary/80 rounded-md transition-colors"
                 >
                   This Week
                 </button>
@@ -240,7 +240,7 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
                       {Array.from({ length: 24 }, (_, hour) => (
                         <div 
                           key={hour} 
-                          className="h-16 border-b border-gray-100 relative group hover:bg-blue-50"
+                          className="h-16 border-b border-border relative group hover:bg-accent"
                         >
                           {/* Timed events for this hour */}
                           {dayEvents.timed
@@ -368,7 +368,7 @@ export default function TripWeekView({ tripId }: TripWeekViewProps) {
                   {selectedEvent.kind !== 'unscheduled' && (
                     <button
                       onClick={() => handleUnscheduleEvent(selectedEvent)}
-                      className="px-3 py-2 text-sm bg-secondary text-foreground rounded-md hover:bg-gray-200 transition-colors"
+                      className="px-3 py-2 text-sm bg-secondary text-foreground rounded-md hover:bg-secondary/80 transition-colors"
                     >
                       Unschedule
                     </button>

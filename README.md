@@ -131,6 +131,44 @@ import { useQuery, useMutation } from 'convex/react'
 - **Focus Management**: Clear focus indicators and logical tab order
 - **Portal Z-Index**: Use `z-50+` for modals, dropdowns, tooltips
 
+### Theming
+
+The application supports robust light/dark/system theming:
+
+#### Implementation
+- **Theme Provider**: Uses `next-themes` with class-based strategy
+- **Theme Tokens**: All colors use CSS custom properties from shadcn/ui
+- **System Integration**: Respects system theme preference by default
+- **PWA Support**: Dual meta theme-color tags for browser UI adaptation
+
+#### Usage Patterns
+
+```typescript
+// ✅ Use theme tokens (adapts to light/dark)
+className="bg-card text-foreground border-border"
+
+// ❌ Avoid hardcoded colors
+className="bg-white text-black border-gray-200"
+```
+
+#### Image Theming
+```typescript
+// Light/dark image variants
+<img src="/light-hero.png" className="theme-image-light" />
+<img src="/dark-hero.png" className="theme-image-dark" />
+
+// Logo variants  
+<img src="/logo-light.svg" className="theme-logo-light" />
+<img src="/logo-dark.svg" className="theme-logo-dark" />
+```
+
+#### Testing
+```bash
+pnpm test:e2e tests/e2e/theme.spec.ts
+```
+
+The theme system ensures all components work seamlessly across light and dark modes with proper contrast ratios and accessibility compliance.
+
 ### Component Examples
 
 ```typescript
