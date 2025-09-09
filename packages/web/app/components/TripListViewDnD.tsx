@@ -112,7 +112,7 @@ function DraggableListItem({
         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1
         touch-none select-none
         ${getEventColor(event.kind)}
-        ${isDragging ? 'opacity-50 scale-105 rotate-1 shadow-xl z-50' : 'hover:shadow-md'}
+        ${isDragging ? 'opacity-40 scale-105 rotate-1 translate-x-2 shadow-xl z-50' : 'hover:shadow-md'}
         ${className}
       `}
     >
@@ -226,7 +226,7 @@ function DroppableDay({
             <div key={event._id} className="relative">
               {/* Drop indicator line before event */}
               {dropIndicator?.containerId === format(date, 'yyyy-MM-dd') && dropIndicator.index === index && (
-                <div className="h-0.5 bg-primary rounded-full animate-pulse shadow-sm mb-2 transition-all duration-150" />
+                <div className="h-0.5 bg-primary rounded-full shadow-sm mb-2" />
               )}
               
               <DraggableListItem
@@ -241,7 +241,7 @@ function DroppableDay({
           
           {/* Drop indicator line after all events */}
           {dropIndicator?.containerId === format(date, 'yyyy-MM-dd') && dropIndicator.index === events.length && (
-            <div className="h-0.5 bg-primary rounded-full animate-pulse shadow-sm mt-2 transition-all duration-150" />
+            <div className="h-0.5 bg-primary rounded-full shadow-sm mt-2" />
           )}
         </div>
       )}
@@ -249,7 +249,7 @@ function DroppableDay({
       {/* Drop indicator for empty days */}
       {events.length === 0 && dropIndicator?.containerId === format(date, 'yyyy-MM-dd') && (
         <div className="p-4 bg-muted/50">
-          <div className="h-0.5 bg-primary rounded-full animate-pulse shadow-sm transition-all duration-150" />
+          <div className="h-0.5 bg-primary rounded-full shadow-sm" />
         </div>
       )}
     </div>
@@ -306,7 +306,7 @@ function DroppableUnscheduledArea({
           <div key={event._id} className="relative">
             {/* Drop indicator line before event */}
             {dropIndicator?.containerId === 'unscheduled' && dropIndicator.index === index && (
-              <div className="h-0.5 bg-primary rounded-full animate-pulse shadow-sm mb-2 transition-all duration-150" />
+              <div className="h-0.5 bg-primary rounded-full shadow-sm mb-2" />
             )}
             
             <DraggableListItem
@@ -320,7 +320,7 @@ function DroppableUnscheduledArea({
         
         {/* Drop indicator line after all events */}
         {dropIndicator?.containerId === 'unscheduled' && dropIndicator.index === events.length && (
-          <div className="h-0.5 bg-primary rounded-full animate-pulse shadow-sm mt-2 transition-all duration-150" />
+          <div className="h-0.5 bg-primary rounded-full shadow-sm mt-2" />
         )}
         
         {events.length === 0 && !isDragOver && (
@@ -333,7 +333,7 @@ function DroppableUnscheduledArea({
         
         {/* Drop indicator for empty unscheduled area */}
         {events.length === 0 && isDragOver && dropIndicator?.containerId === 'unscheduled' && (
-          <div className="h-0.5 bg-primary rounded-full animate-pulse shadow-sm transition-all duration-150" />
+          <div className="h-0.5 bg-primary rounded-full shadow-sm" />
         )}
       </div>
     </div>
@@ -680,7 +680,7 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
         {/* Drag Overlay */}
         <DragOverlay>
           {activeEvent && (
-            <div className="pointer-events-none">
+            <div className="pointer-events-none opacity-50">
               <DraggableListItem
                 event={activeEvent}
                 onEdit={() => {}}
