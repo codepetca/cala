@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from './ThemeToggle';
 import { NavItems } from './NavItems';
+import { useHeader } from './HeaderContext';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ interface AppShellProps {
 
 export function AppShell({ children, title = 'Trip Planner' }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { headerContent, headerActions } = useHeader();
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,15 +80,18 @@ export function AppShell({ children, title = 'Trip Planner' }: AppShellProps) {
           {/* Mobile menu button space */}
           <div className="lg:hidden w-8"></div>
           
-          {/* Page title or breadcrumb */}
-          <div className="flex-1">
-            <h2 className="text-lg font-medium text-foreground lg:block hidden">
-              Dashboard
-            </h2>
+          {/* Page title/content or breadcrumb */}
+          <div className="flex-1 flex items-center gap-4">
+            {headerContent || (
+              <h2 className="text-lg font-medium text-foreground lg:block hidden">
+                Dashboard
+              </h2>
+            )}
           </div>
 
           {/* Right side actions */}
           <div className="flex items-center gap-2">
+            {headerActions}
             {/* Desktop theme toggle */}
             <div className="hidden lg:block">
               <ThemeToggle />

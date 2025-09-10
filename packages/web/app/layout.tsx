@@ -1,6 +1,7 @@
 import './globals.css';
 import Providers from './providers';
 import { AppShell } from '@/components/app/AppShell';
+import { HeaderProvider } from '@/components/app/HeaderContext';
 
 export const metadata = {
   title: 'Trip Planner',
@@ -20,9 +21,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>
-          <AppShell>
-            {children}
-          </AppShell>
+          <HeaderProvider>
+            <AppShell>
+              {children}
+            </AppShell>
+          </HeaderProvider>
         </Providers>
       </body>
     </html>

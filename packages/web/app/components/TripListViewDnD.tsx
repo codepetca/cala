@@ -418,6 +418,8 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
   // @dnd-kit drag handlers
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
+    // Prevent horizontal scrolling during drag
+    document.body.style.overflowX = 'hidden';
   };
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -460,6 +462,8 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
     setActiveId(null);
     setDragOverDate(null);
     setDropIndicator(null);
+    // Restore horizontal scrolling after drag
+    document.body.style.overflowX = '';
 
     if (!over || !events) return;
 
@@ -637,9 +641,9 @@ export default function TripListViewDnD({ tripId }: TripListViewDnDProps) {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden overflow-x-hidden">
           {/* Scheduled Events (Left Column) */}
-          <div className="flex-[60] overflow-y-auto">
+          <div className="flex-[60] overflow-y-auto overflow-x-hidden">
             {dateRange.map((day) => {
               const dayEvents = getEventsForDate(format(day, 'yyyy-MM-dd'));
               const dateStr = format(day, 'yyyy-MM-dd');
